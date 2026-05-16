@@ -8,7 +8,7 @@ import { AuthResponse, User } from '../models';
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost:3000/api/auth';
+  private readonly apiUrl = 'http://localhost:3000/api/v1/auth';
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'auth_user';
 
@@ -29,6 +29,28 @@ export class AuthService {
         this.currentUser.set(response.user);
       })
     );
+  }
+
+  redirectByRole(): void {
+    const user = this.currentUser();
+    if (!user) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
+    switch (user.role) {
+      case 'SUPER_ADMIN':
+        this.router.navigate(['/dashboard']); // Shared dynamic dashboard or specific one
+        break;
+      case 'ADMIN':
+        this.router.navigate(['/dashboard']);
+        break;
+      case 'USER':
+        this.router.navigate(['/dashboard']);
+        break;
+      default:
+        this.router.navigate(['/auth/login']);
+    }
   }
 
   logout(): void {

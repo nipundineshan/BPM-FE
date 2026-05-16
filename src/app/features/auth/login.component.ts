@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -72,11 +72,22 @@ export class LoginComponent {
       this.error = '';
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
-          this.router.navigate(['/dashboard']);
+          this.authService.redirectByRole();
         },
-        error: (err) => {
-          this.error = 'Invalid credentials. Please try again.';
+        error: (err: any) => {
           this.loading = false;
+          const status = err.error?.status;
+          const message = err.error?.message;
+
+          if (message === 'Your account is pending admin approval') {
+            this.error = 'Your account is awaiting admin approval. Please check back later.';
+          } else if (message === 'Your account has been rejected') {
+            this.error = 'Your application has been rejected. Please contact support.';
+          } else if (message === 'Your account is disabled') {
+            this.error = 'Your account is currently disabled. Please contact an administrator.';
+          } else {
+            this.error = 'Invalid credentials. Please try again.';
+          }
         }
       });
     }

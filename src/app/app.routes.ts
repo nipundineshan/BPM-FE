@@ -25,8 +25,19 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
       },
       {
+        path: 'super-admin/admins',
+        loadComponent: () => import('./features/super-admin/admin-management.component').then(m => m.AdminManagementComponent),
+        data: { roles: ['SUPER_ADMIN'] }
+      },
+      {
+        path: 'admin/approvals',
+        loadComponent: () => import('./features/admin/user-approval.component').then(m => m.UserApprovalComponent),
+        data: { roles: ['ADMIN', 'SUPER_ADMIN'] }
+      },
+      {
         path: 'plots/create',
-        loadComponent: () => import('./features/plots/plot-create.component').then(m => m.PlotCreateComponent)
+        loadComponent: () => import('./features/plots/plot-create.component').then(m => m.PlotCreateComponent),
+        data: { roles: ['ADMIN', 'USER'] }
       },
       {
         path: 'plots/:id',

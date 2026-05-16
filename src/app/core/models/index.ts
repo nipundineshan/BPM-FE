@@ -1,7 +1,18 @@
+export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'USER';
+
+export enum UserStatus {
+  PENDING_APPROVAL = 'PENDING_APPROVAL',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  BLOCKED = 'BLOCKED'
+}
+
 export interface User {
   id: string;
   email: string;
-  role: 'ADMIN' | 'USER';
+  role: UserRole;
+  status: UserStatus;
+  isActive: boolean;
   walletAddress?: string;
 }
 
