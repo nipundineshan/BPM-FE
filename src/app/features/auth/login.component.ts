@@ -71,22 +71,32 @@ export class LoginComponent {
       this.loading = true;
       this.error = '';
       this.authService.login(this.loginForm.value).subscribe({
-        next: () => {
-          this.authService.redirectByRole();
+        next: (response) => {
+          const user = response.data.user;
+          console.log('LoginComponent: Login successful, user:', user);
+          this.authService.redirectByRole(user).then(navigated => {
+            console.log('LoginComponent: Redirection completed. Navigated?', navigated);
+            if (!navigated) {
+              this.error = 'Login successful, but redirection failed. Please try clicking Dashboard manually.';
+              this.loading = false;
+            }
+          });
         },
         error: (err: any) => {
           this.loading = false;
-          const status = err.error?.status;
-          const message = err.error?.message;
+          // NestJS ExceptionFilter wraps errors: { error: { message: '...' } }
+          const errorBody = err.error?.error;
+          const message = typeof errorBody === 'object' ? errorBody.message : errorBody || err.error?.message;
+          const finalMessage = Array.isArray(message) ? message[0] : message;
 
-          if (message === 'Your account is pending admin approval') {
+          if (finalMessage === 'Your account is pending admin approval.') {
             this.error = 'Your account is awaiting admin approval. Please check back later.';
-          } else if (message === 'Your account has been rejected') {
+          } else if (finalMessage === 'Your account has been rejected.') {
             this.error = 'Your application has been rejected. Please contact support.';
-          } else if (message === 'Your account is disabled') {
+          } else if (finalMessage === 'Your account has been blocked.') {
             this.error = 'Your account is currently disabled. Please contact an administrator.';
           } else {
-            this.error = 'Invalid credentials. Please try again.';
+            this.error = finalMessage || 'Invalid credentials. Please try again.';
           }
         }
       });

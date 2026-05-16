@@ -13,11 +13,18 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   isActive: boolean;
-  walletAddress?: string;
+}
+
+export interface ApiResponse<T> {
+  statusCode: number;
+  message: string;
+  data: T;
+  timestamp: string;
 }
 
 export interface AuthResponse {
   access_token: string;
+  refresh_token: string;
   user: User;
 }
 

@@ -29,7 +29,7 @@ import { User } from '../../core/models';
         <form [formGroup]="adminForm" (ngSubmit)="onAddAdmin()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
-            <input type="text" formControlName="name" class="w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500">
+            <input type="text" formControlName="fullName" class="w-full px-3 py-2 border rounded-lg focus:ring-primary-500 focus:border-primary-500">
           </div>
           <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
@@ -99,7 +99,7 @@ export class AdminManagementComponent implements OnInit {
 
   constructor(private adminService: AdminService, private fb: FormBuilder) {
     this.adminForm = this.fb.group({
-      name: ['', Validators.required],
+      fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       phoneNumber: ['', Validators.required]

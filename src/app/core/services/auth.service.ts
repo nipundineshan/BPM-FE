@@ -2,7 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
-import { AuthResponse, User } from '../models';
+import { ApiResponse, AuthResponse, User } from '../models';
 
 @Injectable({
   providedIn: 'root'
@@ -18,39 +18,54 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   register(payload: any): Observable<any> {
+    console.log(payload);
+    
     return this.http.post(`${this.apiUrl}/register`, payload);
   }
 
-  login(payload: any): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, payload).pipe(
+  login(payload: any): Observable<ApiResponse<AuthResponse>> {
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/login`, payload).pipe(
       tap(response => {
-        localStorage.setItem(this.TOKEN_KEY, response.access_token);
-        localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
-        this.currentUser.set(response.user);
+        if (response && response.data) {
+          const { access_token, user } = response.data;
+          localStorage.setItem(this.TOKEN_KEY, access_token);
+          localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+          this.currentUser.set(user);
+        }
       })
     );
   }
 
-  redirectByRole(): void {
-    const user = this.currentUser();
-    if (!user) {
-      this.router.navigate(['/auth/login']);
-      return;
+  redirectByRole(user?: User | null): Promise<boolean> {
+    const activeUser = user !== undefined ? user : this.currentUser();
+    console.log('AuthService: redirectByRole called with user:', activeUser);
+    
+    if (!activeUser) {
+      console.warn('AuthService: No active user found for redirection');
+      return this.router.navigate(['/auth/login']);
     }
 
-    switch (user.role) {
-      case 'SUPER_ADMIN':
-        this.router.navigate(['/dashboard']); // Shared dynamic dashboard or specific one
-        break;
-      case 'ADMIN':
-        this.router.navigate(['/dashboard']);
-        break;
-      case 'USER':
-        this.router.navigate(['/dashboard']);
-        break;
-      default:
-        this.router.navigate(['/auth/login']);
+    let target = '/dashboard';
+    if (activeUser.role === 'SUPER_ADMIN') {
+      target = '/super-admin/admins';
+    } else if (activeUser.role === 'ADMIN') {
+      target = '/dashboard';
+    } else if (activeUser.role === 'USER') {
+      target = '/dashboard';
     }
+
+    console.log('AuthService: Navigating to:', target);
+    const targetSegments = target.split('/').filter(s => !!s);
+    return this.router.navigate(['/', ...targetSegments]).then(
+      success => {
+        console.log('AuthService: Navigation outcome:', success ? 'SUCCESS' : 'FAILURE (Guard rejected or route not found)');
+        return success;
+      },
+      error => {
+        console.error('AuthService: Routing Error:', error);
+        return false;
+      }
+    );
   }
 
   logout(): void {
@@ -66,6 +81,14 @@ export class AuthService {
 
   private getUserFromStorage(): User | null {
     const userJson = localStorage.getItem(this.USER_KEY);
-    return userJson ? JSON.parse(userJson) : null;
+    if (!userJson || userJson === 'undefined') return null;
+    
+    try {
+      return JSON.parse(userJson);
+    } catch (e) {
+      console.error('Error parsing user from storage', e);
+      localStorage.removeItem(this.USER_KEY);
+      return null;
+    }
   }
 }

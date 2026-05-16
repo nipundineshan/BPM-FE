@@ -30,7 +30,7 @@ import { Plot } from '../../core/models';
         <p class="mt-1 text-sm text-slate-500">Get started by creating a new property plot.</p>
       </div>
 
-      <div *ngGrid class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div *ngFor="let plot of plots()" 
              class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
              [routerLink]="['/plots', plot.id]">

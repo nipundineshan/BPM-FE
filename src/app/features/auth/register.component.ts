@@ -34,16 +34,46 @@ import { AuthService } from '../../core/services/auth.service';
         <form *ngIf="!success" class="mt-8 space-y-6" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
           <div class="rounded-md shadow-sm -space-y-px">
             <div>
+              <label for="full-name" class="sr-only">Full Name</label>
+              <input id="full-name" name="fullName" type="text" formControlName="fullName" required
+                class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                placeholder="Full Name">
+            </div>
+            <div>
               <label for="email-address" class="sr-only">Email address</label>
               <input id="email-address" name="email" type="email" formControlName="email" required
-                class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 rounded-t-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="Email address">
             </div>
             <div>
               <label for="password" class="sr-only">Password</label>
               <input id="password" name="password" type="password" formControlName="password" required
-                class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
                 placeholder="Password">
+            </div>
+            <div>
+              <label for="phone-number" class="sr-only">Phone Number</label>
+              <input id="phone-number" name="phoneNumber" type="text" formControlName="phoneNumber" required
+                class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                placeholder="Phone Number">
+            </div>
+            <div>
+              <label for="wallet-address" class="sr-only">Wallet Address</label>
+              <input id="wallet-address" name="walletAddress" type="text" formControlName="walletAddress" required
+                class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                placeholder="Wallet Address (0x...)">
+            </div>
+            <div>
+              <label for="government-id" class="sr-only">Government ID</label>
+              <input id="government-id" name="governmentId" type="text" formControlName="governmentId" required
+                class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                placeholder="Government ID (e.g. Passport/Aadhaar)">
+            </div>
+            <div>
+              <label for="address" class="sr-only">Home Address</label>
+              <textarea id="address" name="address" formControlName="address" required
+                class="appearance-none rounded-none relative block w-full px-3 py-3 border border-slate-300 placeholder-slate-500 text-slate-900 rounded-b-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                placeholder="Home Address"></textarea>
             </div>
           </div>
 
@@ -75,8 +105,13 @@ export class RegisterComponent {
     private router: Router
   ) {
     this.registerForm = this.fb.group({
+      fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      phoneNumber: ['', Validators.required],
+      walletAddress: ['', Validators.required],
+      governmentId: ['', Validators.required],
+      address: ['', Validators.required]
     });
   }
 
@@ -84,13 +119,20 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       this.loading = true;
       this.error = '';
-      this.authService.register(this.registerForm.value).subscribe({
+      const payload = {
+        ...this.registerForm.value,
+        role: 'USER'
+      };
+      
+      this.authService.register(payload).subscribe({
         next: () => {
           this.success = true;
           this.loading = false;
         },
         error: (err: any) => {
-          this.error = 'Registration failed. Email might already be in use.';
+          const errorBody = err.error?.error;
+          const message = typeof errorBody === 'object' ? errorBody.message : errorBody || err.error?.message;
+          this.error = Array.isArray(message) ? message[0] : (message || 'Registration failed. Please check your details.');
           this.loading = false;
         }
       });
