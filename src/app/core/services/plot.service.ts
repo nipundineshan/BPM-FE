@@ -1,36 +1,55 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { ApiResponse, Plot } from '../models';
-import { map } from 'rxjs/operators';
+import { Observable, tap } from 'rxjs';
+import { Plot, PlotStatus } from '../models';
+import { environment } from '../../../environments/environment';
+import { AppStateService } from './app-state.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PlotService {
-  private readonly apiUrl = 'http://localhost:3000/api/v1/plots';
+  private http = inject(HttpClient);
+  private appState = inject(AppStateService);
+  private apiUrl = `${environment.apiUrl}/plots`;
 
-  constructor(private http: HttpClient) {}
+  getAllPlots(): Observable<Plot[]> {
+    this.appState.setLoading(true);
+    return this.http.get<Plot[]>(this.apiUrl).pipe(
+      tap(() => this.appState.setLoading(false))
+    );
+  }
 
-  getPlots(): Observable<Plot[]> {
-    return this.http.get<ApiResponse<Plot[]>>(this.apiUrl).pipe(
-      map(res => res.data)
+  getMyPlots(): Observable<Plot[]> {
+    this.appState.setLoading(true);
+    return this.http.get<Plot[]>(`${this.apiUrl}/my-plots`).pipe(
+      tap(() => this.appState.setLoading(false))
     );
   }
 
   getPlotById(id: string): Observable<Plot> {
-    return this.http.get<ApiResponse<Plot>>(`${this.apiUrl}/${id}`).pipe(
-      map(res => res.data)
+    this.appState.setLoading(true);
+    return this.http.get<Plot>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.appState.setLoading(false))
     );
   }
 
-  createPlot(payload: Partial<Plot>): Observable<Plot> {
-    return this.http.post<ApiResponse<Plot>>(this.apiUrl, payload).pipe(
-      map(res => res.data)
+  createPlot(plotData: any): Observable<Plot> {
+    this.appState.setLoading(true);
+    return this.http.post<Plot>(this.apiUrl, plotData).pipe(
+      tap(() => this.appState.setLoading(false))
     );
   }
 
-  prepareForMinting(id: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/${id}/ipfs`, {});
+  approvePlot(id: string): Observable<Plot> {
+    return this.http.patch<Plot>(`${this.apiUrl}/${id}/approve`, {});
+  }
+
+  rejectPlot(id: string, reason: string): Observable<Plot> {
+    return this.http.patch<Plot>(`${this.apiUrl}/${id}/reject`, { reason });
+  }
+
+  uploadToIpfs(id: string): Observable<{ ipfsHash: string }> {
+    return this.http.post<{ ipfsHash: string }>(`${this.apiUrl}/${id}/ipfs`, {});
   }
 }

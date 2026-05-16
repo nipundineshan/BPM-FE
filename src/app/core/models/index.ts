@@ -1,44 +1,68 @@
-export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'USER';
+export type Role = 'SUPER_ADMIN' | 'ADMIN' | 'USER';
 
-export enum UserStatus {
-  PENDING_APPROVAL = 'PENDING_APPROVAL',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
-  BLOCKED = 'BLOCKED'
-}
+export type UserStatus =
+  | 'PENDING_APPROVAL'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'BLOCKED';
 
 export interface User {
   id: string;
+  fullName: string;
   email: string;
-  role: UserRole;
+  role: Role;
   status: UserStatus;
+  phoneNumber?: string;
+  walletAddress?: string;
+  governmentId?: string;
+  address?: string;
+  profileImage?: string;
   isActive: boolean;
-}
-
-export interface ApiResponse<T> {
-  statusCode: number;
-  message: string;
-  data: T;
-  timestamp: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AuthResponse {
-  access_token: string;
-  refresh_token: string;
-  user: User;
+  data: { access_token: string; refresh_token?: string; user: User };
 }
+
+export type PlotStatus =
+  | 'PENDING_APPROVAL'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'MINTED';
 
 export interface Plot {
   id: string;
   title: string;
   description: string;
   location: string;
+  district: string;
+  latitude: number;
+  longitude: number;
   price: number;
-  imageUrl?: string;
-  documentUrl?: string;
+  areaSize: number;
+  imageUrl: string;
+  documents?: string[];
+  status: PlotStatus;
+  rejectionReason?: string;
   ipfsHash?: string;
   tokenId?: string;
   transactionHash?: string;
-  status: 'PENDING' | 'IPFS_PINNED' | 'MINTED';
+  metadataUri?: string;
+  ipfsCid?: string;
+  isMinted: boolean;
   ownerId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ActivityLog {
+  id: string;
+  userId: string;
+  action: string;
+  details: string;
+  timestamp: string;
 }

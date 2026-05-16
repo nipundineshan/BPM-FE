@@ -1,21 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Web3Service } from './web3.service';
 
-import { ApiResponse } from '../models';
-import { map } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NftService {
-  private readonly apiUrl = 'http://localhost:3000/api/v1/nfts';
+  private apiUrl = `${environment.apiUrl}/nft`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private web3Service: Web3Service) {}
 
-  mintPlot(plotId: string): Observable<{ transactionHash: string }> {
-    return this.http.post<ApiResponse<{ transactionHash: string }>>(`${this.apiUrl}/mint/${plotId}`, {}).pipe(
-      map(res => res.data)
-    );
+  mintNft(plotId: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/mint/${plotId}`, {});
   }
 }
