@@ -17,26 +17,26 @@ import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
       <nav class="flex text-sm text-slate-500 mb-4">
         <a routerLink="/dashboard" class="hover:text-primary-600">Dashboard</a>
         <span class="mx-2">/</span>
-        <span class="text-slate-900 font-medium">{{ plot.title }}</span>
+        <span class="text-slate-900 dark:text-white font-medium">{{ plot.title }}</span>
       </nav>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Image and Main Info -->
         <div class="lg:col-span-2 space-y-6">
-          <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200">
+          <div class="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
              <img *ngIf="plot.imageUrl" [src]="plot.imageUrl" class="w-full h-96 object-cover">
-             <div *ngIf="!plot.imageUrl" class="w-full h-96 bg-slate-100 flex items-center justify-center text-slate-400">
+             <div *ngIf="!plot.imageUrl" class="w-full h-96 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400">
                 <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
              </div>
              <div class="p-8">
-                <h1 class="text-3xl font-bold text-slate-900">{{ plot.title }}</h1>
+                <h1 class="text-3xl font-bold text-slate-900 dark:text-white">{{ plot.title }}</h1>
                 <p class="text-slate-500 mt-2 flex items-center">
                   <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                   {{ plot.location }}
                 </p>
-                <div class="mt-6 border-t border-slate-100 pt-6">
-                   <h2 class="text-sm font-semibold text-slate-900 uppercase tracking-wider">Description</h2>
-                   <p class="text-slate-600 mt-4 leading-relaxed">{{ plot.description }}</p>
+                <div class="mt-6 border-t border-slate-100 dark:border-slate-800 pt-6">
+                   <h2 class="text-sm font-semibold text-slate-900 dark:text-white uppercase tracking-wider">Description</h2>
+                   <p class="text-slate-600 dark:text-slate-400 mt-4 leading-relaxed">{{ plot.description }}</p>
                 </div>
              </div>
           </div>
@@ -45,14 +45,14 @@ import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
         <!-- Action Sidebar -->
         <div class="space-y-6">
           <!-- Price Card -->
-          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+          <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
             <span class="text-sm text-slate-500 font-medium">Market Price</span>
             <div class="text-3xl font-bold text-primary-600 mt-1">\${{ plot.price.toLocaleString() }}</div>
           </div>
 
           <!-- Tokenization Status Card -->
-          <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-6">
-            <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-4">Tokenization Progress</h3>
+          <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-6">
+            <h3 class="font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-4">Tokenization Progress</h3>
             
             <!-- Phase 1: Creation -->
             <div class="flex items-start space-x-4">
@@ -60,26 +60,26 @@ import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
               </div>
               <div>
-                <p class="text-sm font-bold text-slate-900">Property Registered</p>
+                <p class="text-sm font-bold text-slate-900 dark:text-white">Property Registered</p>
                 <p class="text-xs text-slate-500">Database entry created</p>
               </div>
             </div>
 
             <!-- Phase 2: IPFS -->
             <div class="flex items-start space-x-4">
-              <div [ngClass]="plot.status !== 'PENDING' ? 'bg-green-500' : 'bg-slate-200'" 
+              <div [ngClass]="plot.status !== 'PENDING' ? 'bg-green-500' : 'bg-slate-200 dark:bg-slate-700'" 
                    class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white transition-colors">
                 <svg *ngIf="plot.status !== 'PENDING'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 <span *ngIf="plot.status === 'PENDING'" class="text-xs font-bold text-slate-400">2</span>
               </div>
               <div class="flex-1">
-                <p class="text-sm font-bold text-slate-900">IPFS Metadata</p>
+                <p class="text-sm font-bold text-slate-900 dark:text-white">IPFS Metadata</p>
                 <p class="text-xs text-slate-500">Metadata pinned to IPFS</p>
                 <button *ngIf="plot.status === 'PENDING'" (click)="onPrepareIPFS()" [disabled]="loadingIPFS()"
-                        class="mt-3 w-full py-2 bg-slate-900 text-white rounded-lg text-xs font-bold hover:bg-slate-800 disabled:opacity-50 transition-all">
+                        class="mt-3 w-full py-2 bg-slate-900 dark:bg-primary-600 text-white rounded-lg text-xs font-bold hover:bg-slate-800 dark:hover:bg-primary-700 disabled:opacity-50 transition-all">
                   {{ loadingIPFS() ? 'Pinning...' : 'Prepare for Minting' }}
                 </button>
-                <div *ngIf="plot.ipfsHash" class="mt-2 text-[10px] font-mono bg-slate-50 p-2 rounded truncate text-slate-500">
+                <div *ngIf="plot.ipfsHash" class="mt-2 text-[10px] font-mono bg-slate-50 dark:bg-slate-800 p-2 rounded truncate text-slate-500">
                   Hash: {{ plot.ipfsHash }}
                 </div>
               </div>
@@ -87,13 +87,13 @@ import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
 
             <!-- Phase 3: Minting -->
             <div class="flex items-start space-x-4">
-              <div [ngClass]="plot.status === 'MINTED' ? 'bg-green-500' : 'bg-slate-200'" 
+              <div [ngClass]="plot.status === 'MINTED' ? 'bg-green-500' : 'bg-slate-200 dark:bg-slate-700'" 
                    class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white transition-colors">
                 <svg *ngIf="plot.status === 'MINTED'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 <span *ngIf="plot.status !== 'MINTED'" class="text-xs font-bold text-slate-400">3</span>
               </div>
               <div class="flex-1">
-                <p class="text-sm font-bold text-slate-900">Blockchain Minting</p>
+                <p class="text-sm font-bold text-slate-900 dark:text-white">Blockchain Minting</p>
                 <p class="text-xs text-slate-500">ERC-721 Token on Sepolia</p>
                 <button *ngIf="plot.status === 'IPFS_PINNED'" (click)="onMintNFT()" [disabled]="loadingMint() || !web3Service.walletAddress()"
                         class="mt-3 w-full py-2 bg-primary-600 text-white rounded-lg text-xs font-bold hover:bg-primary-700 disabled:opacity-50 transition-all shadow-sm">
@@ -102,7 +102,7 @@ import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
                 <p *ngIf="plot.status === 'IPFS_PINNED' && !web3Service.walletAddress()" class="mt-2 text-[10px] text-red-500">Please connect wallet to mint.</p>
                 
                 <div *ngIf="plot.transactionHash" class="mt-2 space-y-1">
-                  <div class="text-[10px] font-mono bg-slate-50 p-2 rounded truncate text-slate-500">
+                  <div class="text-[10px] font-mono bg-slate-50 dark:bg-slate-800 p-2 rounded truncate text-slate-500">
                      TX: {{ plot.transactionHash }}
                   </div>
                   <a [href]="'https://sepolia.etherscan.io/tx/' + plot.transactionHash" target="_blank" 
@@ -114,12 +114,12 @@ import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
             </div>
 
             <!-- Confirmation -->
-            <div *ngIf="plot.status === 'MINTED'" class="bg-green-50 p-4 rounded-xl border border-green-100 animate-pulse">
+            <div *ngIf="plot.status === 'MINTED'" class="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl border border-green-100 dark:border-green-900/30 animate-pulse">
                <div class="flex items-center space-x-3">
                   <span class="text-xl">🎉</span>
                   <div>
-                    <p class="text-xs font-bold text-green-800 uppercase tracking-wider">NFT Confirmed</p>
-                    <p class="text-sm font-bold text-green-900">Token ID: #{{ plot.tokenId || 'Syncing...' }}</p>
+                    <p class="text-xs font-bold text-green-800 dark:text-green-400 uppercase tracking-wider">NFT Confirmed</p>
+                    <p class="text-sm font-bold text-green-900 dark:text-green-300">Token ID: #{{ plot.tokenId || 'Syncing...' }}</p>
                   </div>
                </div>
             </div>

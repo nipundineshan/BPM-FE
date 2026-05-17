@@ -132,7 +132,7 @@ import { AuthService } from '../../../core/services/auth.service';
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #f8fafc;
+        background-color: var(--bg-app);
         background-image: 
           radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
           radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.05) 0px, transparent 50%);
@@ -153,6 +153,7 @@ import { AuthService } from '../../../core/services/auth.service';
       }
       .auth-card-premium {
         border-radius: 1.5rem !important;
+        background-color: var(--bg-card);
       }
       .top-progress {
         height: 4px;
@@ -162,7 +163,7 @@ import { AuthService } from '../../../core/services/auth.service';
       .custom-field {
         margin-bottom: 0.5rem;
       }
-      .bg-slate-50 { background-color: #f8fafc; }
+      .bg-slate-50 { background-color: var(--bg-app); }
       
       .animate-fade-in { animation: fadeIn 0.6s ease-out; }
       @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

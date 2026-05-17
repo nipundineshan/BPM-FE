@@ -189,15 +189,17 @@ import { PlotService } from '../../../core/services/plot.service';
     }
     
     .bg-indigo-subtle { background: rgba(99, 102, 241, 0.1); }
-    .text-indigo { color: #6366f1; }
+    .text-indigo { color: var(--primary-color); }
     .bg-amber-subtle { background: rgba(245, 158, 11, 0.1); }
     .text-amber { color: #f59e0b; }
     .bg-pink-subtle { background: rgba(236, 72, 153, 0.1); }
     .text-pink { color: #ec4899; }
     .bg-slate-subtle { background: rgba(100, 116, 139, 0.1); }
-    .text-slate { color: #64748b; }
+    .text-slate { color: var(--text-secondary); }
     
     .tiny-icon { font-size: 14px; width: 14px; height: 14px; }
+    
+    .mat-card-header { border-bottom: 1px solid var(--border-color) !important; }
   `]
 })
 export class AdminDashboardComponent implements OnInit {
@@ -214,7 +216,10 @@ export class AdminDashboardComponent implements OnInit {
   public barChartOptions: ChartConfiguration['options'] = {
     responsive: true,
     maintainAspectRatio: false,
-    scales: { x: { grid: { display: false } }, y: { min: 0, grid: { color: '#f1f5f9' } } },
+    scales: { 
+      x: { grid: { display: false }, ticks: { color: '#94a3b8' } }, 
+      y: { min: 0, grid: { color: 'rgba(148, 163, 184, 0.1)' }, ticks: { color: '#94a3b8' } } 
+    },
     plugins: { legend: { display: false } }
   };
   public barChartData: ChartData<'bar'> = {
@@ -230,7 +235,7 @@ export class AdminDashboardComponent implements OnInit {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { size: 11, family: 'Inter' } } },
+      legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { size: 11, family: 'Inter' }, color: '#94a3b8' } },
     }
   };
   public pieChartData: ChartData<'pie', number[], string | string[]> = {

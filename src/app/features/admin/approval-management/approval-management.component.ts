@@ -4,114 +4,72 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { Plot, PlotStatus } from '../../../core/models';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { PlotService } from '../../../core/services/plot.service';
 import { NftService } from '../../../core/services/nft.service';
-import { Router } from '@angular/router';
+import { Plot } from '../../../core/models';
 
 @Component({
   selector: 'app-approval-management',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatTabsModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    MatTooltipModule
-  ],
+  imports: [CommonModule, MatTabsModule, MatCardModule, MatButtonModule, MatIconModule, MatSnackBarModule],
   template: `
     <div class="approval-wrapper animate-fade-in">
-      <div class="d-flex justify-content-between align-items-end mb-5">
+      <div class="mb-5 d-flex justify-content-between align-items-center">
         <div>
-          <h1 class="h2 fw-bold tracking-tight mb-1">Property Verification</h1>
-          <p class="text-slate-500 mb-0">Review and validate property documentation for blockchain tokenization.</p>
+          <h1 class="h2 fw-bold tracking-tight mb-1 text-primary">Asset Verification</h1>
+          <p class="text-slate-500 mb-0">System-wide review queue for property tokenization requests.</p>
+        </div>
+        <div class="d-flex gap-3">
+          <div class="status-indicator-group d-flex gap-4 p-3 bg-white dark:bg-slate-900 rounded-4 border dark:border-slate-800 shadow-sm">
+             <div class="data-point">
+                <div class="label uppercase">Pending</div>
+                <div class="val fw-bold d-flex align-items-center gap-2">
+                  {{ pendingPlots.length }} <span class="count-badge warning">ACT</span>
+                </div>
+             </div>
+          </div>
         </div>
       </div>
 
-      <mat-tab-group class="custom-tabs" animationDuration="200ms">
+      <mat-tab-group class="custom-tabs">
         <!-- PENDING TAB -->
-        <mat-tab>
-          <ng-template mat-tab-label>
-            <div class="d-flex align-items-center gap-2">
-              <span>Pending Review</span>
-              <span class="count-badge warning" *ngIf="pendingPlots.length">{{ pendingPlots.length }}</span>
-            </div>
-          </ng-template>
-
+        <mat-tab label="Awaiting Review">
           <div class="tab-content py-4">
             <div *ngIf="pendingPlots.length === 0" class="empty-state-v2">
-              <div class="empty-icon-circle bg-slate-50">
-                <mat-icon class="text-slate-300">fact_check</mat-icon>
-              </div>
-              <h4 class="fw-bold h5">Clear Queue</h4>
-              <p class="text-slate-400">All property submissions have been processed.</p>
+               <div class="empty-icon-circle bg-slate-50 dark:bg-slate-800">
+                  <mat-icon class="text-slate-300">fact_check</mat-icon>
+               </div>
+               <h4 class="fw-bold text-slate-900 dark:text-white">Review Queue Clear</h4>
+               <p class="text-slate-500">No new property plots are currently awaiting verification.</p>
             </div>
 
             <div class="row g-4">
-              <div class="col-12" *ngFor="let plot of pendingPlots">
-                <mat-card class="verification-card-premium border-0 overflow-hidden shadow-sm">
-                  <div class="row g-0">
-                    <div class="col-md-3">
-                      <div class="image-box h-100">
-                        <img [src]="plot.imageUrl || 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=400'" alt="Property">
-                      </div>
-                    </div>
-                    <div class="col-md-9">
-                      <mat-card-content class="p-4 h-100 d-flex flex-column">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                          <div>
-                            <h3 class="h5 fw-bold mb-1">{{ plot.title }}</h3>
-                            <div class="d-flex align-items-center text-slate-500 small">
-                              <mat-icon class="tiny-icon me-1">location_on</mat-icon>
-                              {{ plot.location }}, {{ plot.district }}
-                            </div>
-                          </div>
-                          <span class="badge bg-warning">Awaiting Verification</span>
-                        </div>
-
-                        <div class="property-grid-small row g-3 mb-auto">
-                          <div class="col-auto">
-                            <div class="data-point">
-                              <div class="label">PRICE</div>
-                              <div class="val fw-bold">{{ plot.price | currency }}</div>
-                            </div>
-                          </div>
-                          <div class="col-auto px-4">
-                             <div class="data-point">
-                              <div class="label">AREA</div>
-                              <div class="val fw-bold">{{ plot.areaSize }} sqft</div>
-                            </div>
-                          </div>
-                          <div class="col-auto">
-                             <div class="data-point">
-                              <div class="label">SUBMITTED</div>
-                              <div class="val">{{ plot.createdAt | date:'mediumDate' }}</div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
-                          <button mat-button color="primary" class="fw-bold" (click)="viewDetails(plot)">
-                            VIEW DOCUMENTS
-                          </button>
-                          <button mat-stroked-button color="warn" (click)="rejectPlot(plot)">
-                            REJECT
-                          </button>
-                          <button mat-flat-button color="primary" class="px-4 shadow-sm" (click)="approvePlot(plot)">
-                            APPROVE ASSET
-                          </button>
-                        </div>
-                      </mat-card-content>
-                    </div>
+              <div class="col-md-6 col-xl-4" *ngFor="let plot of pendingPlots">
+                <mat-card class="verification-card-premium border-0 shadow-sm overflow-hidden h-100">
+                  <div class="image-box h-48">
+                    <img [src]="plot.imageUrl || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=400'">
                   </div>
+                  <mat-card-content class="p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                      <h3 class="h6 fw-bold mb-0 text-slate-900 dark:text-white">{{ plot.title }}</h3>
+                      <span class="badge bg-warning">PENDING</span>
+                    </div>
+                    
+                    <div class="d-flex align-items-center text-slate-400 small mb-4">
+                      <mat-icon class="tiny-icon me-1">location_on</mat-icon> {{ plot.location }}
+                    </div>
+
+                    <div class="d-flex gap-2 pt-3 border-top dark:border-slate-800">
+                      <button mat-flat-button color="primary" class="flex-grow-1 rounded-pill" (click)="approvePlot(plot)">
+                        APPROVE
+                      </button>
+                      <button mat-stroked-button color="warn" class="flex-grow-1 rounded-pill" (click)="rejectPlot(plot)">
+                        REJECT
+                      </button>
+                    </div>
+                  </mat-card-content>
                 </mat-card>
               </div>
             </div>
@@ -130,7 +88,7 @@ import { Router } from '@angular/router';
                         <img [src]="plot.imageUrl || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=400'">
                       </div>
                       <div>
-                        <div class="fw-bold text-dark">{{ plot.title }}</div>
+                        <div class="fw-bold text-dark dark:text-white">{{ plot.title }}</div>
                         <div class="tiny text-slate-500">{{ plot.location }}</div>
                       </div>
                     </div>
@@ -174,7 +132,7 @@ import { Router } from '@angular/router';
                 <mat-card class="rejected-card border-0 border-start border-danger border-4 shadow-sm">
                   <mat-card-content class="p-4 d-flex justify-content-between align-items-center">
                     <div>
-                      <h5 class="fw-bold text-slate-900 mb-1">{{ plot.title }}</h5>
+                      <h5 class="fw-bold text-slate-900 dark:text-white mb-1">{{ plot.title }}</h5>
                       <div class="text-danger small fw-medium mb-2">
                         <mat-icon class="tiny-icon align-middle">error_outline</mat-icon> {{ plot.rejectionReason }}
                       </div>
@@ -204,7 +162,7 @@ import { Router } from '@angular/router';
     .count-badge.warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
 
     /* Verification Cards */
-    .verification-card-premium { border-radius: 1.25rem !important; }
+    .verification-card-premium { border-radius: 1.25rem !important; background: var(--bg-card); }
     .image-box { overflow: hidden; background: #000; }
     .image-box img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; }
 
@@ -212,7 +170,7 @@ import { Router } from '@angular/router';
     .data-point .val { font-size: 0.9rem; color: var(--text-primary); }
 
     /* Verified Asset Row */
-    .verified-asset-row { border-radius: 1rem !important; }
+    .verified-asset-row { border-radius: 1rem !important; background: var(--bg-card); }
     .mini-thumb { width: 44px; height: 44px; border-radius: 10px; overflow: hidden; }
     .mini-thumb img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -227,9 +185,10 @@ import { Router } from '@angular/router';
     }
     .empty-icon-circle mat-icon { font-size: 40px; width: 40px; height: 40px; }
 
-    .rejected-card { border-radius: 0.75rem !important; }
+    .rejected-card { border-radius: 0.75rem !important; background: var(--bg-card); }
     .tiny-icon { font-size: 14px; width: 14px; height: 14px; }
     .small-icon { font-size: 18px; width: 18px; height: 18px; }
+    .text-indigo { color: var(--primary-color); }
   `]
 })
 export class ApprovalManagementComponent implements OnInit {

@@ -145,7 +145,7 @@ import { UserService } from '../../../core/services/user.service';
   styles: [
     `
       .approvals-container {
-        background: #f8fafc;
+        background: var(--bg-app);
         min-height: calc(100vh - 64px);
       }
       .avatar-sm {
@@ -167,10 +167,13 @@ import { UserService } from '../../../core/services/user.service';
       }
       mat-row {
         transition: background-color 0.2s;
+        border-bottom: 1px solid var(--border-color);
       }
       mat-row:hover {
-        background-color: #f1f5f9;
+        background-color: var(--bg-app);
+        opacity: 0.8;
       }
+      .bg-light { background-color: var(--bg-app) !important; color: var(--text-primary) !important; }
     `,
   ],
 })

@@ -141,25 +141,27 @@ import { AppStateService } from '../../core/services/app-state.service';
     </div>
   `,
   styles: [`
-    .landing-shell { background-color: #f8fafc; }
+    .landing-shell { background-color: var(--bg-app); }
     
     .landing-nav {
       height: 80px;
       position: sticky;
       top: 0;
-      background: rgba(248, 250, 252, 0.8);
+      background: var(--bg-app);
+      opacity: 0.95;
       backdrop-filter: blur(12px);
       z-index: 1000;
+      border-bottom: 1px solid var(--border-color);
     }
 
     .logo-square { width: 36px; height: 36px; background: var(--primary-color); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
     .logo-square-small { width: 24px; height: 24px; background: var(--primary-color); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
     .logo-square-small mat-icon { font-size: 14px; width: 14px; height: 14px; }
     
-    .brand-name { font-weight: 800; font-size: 1.5rem; letter-spacing: -0.025em; color: #0f172a; }
-    .brand-name-small { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.025em; color: #0f172a; }
+    .brand-name { font-weight: 800; font-size: 1.5rem; letter-spacing: -0.025em; color: var(--text-primary); }
+    .brand-name-small { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.025em; color: var(--text-primary); }
 
-    .v-divider { width: 1px; height: 20px; background: #e2e8f0; }
+    .v-divider { width: 1px; height: 20px; background: var(--border-color); }
 
     /* Hero Section */
     .hero-section { overflow: hidden; position: relative; }
@@ -176,18 +178,19 @@ import { AppStateService } from '../../core/services/app-state.service';
 
     .badge-pill {
       display: flex; align-items: center; gap: 8px; width: fit-content;
-      padding: 6px 16px; background: #ffffff; border: 1px solid #e2e8f0;
-      border-radius: 9999px; font-size: 0.75rem; font-weight: 700; color: #6366f1;
+      padding: 6px 16px; background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 9999px; font-size: 0.75rem; font-weight: 700; color: var(--primary-color);
     }
     
-    .pulse { width: 8px; height: 8px; background: #6366f1; border-radius: 50%; animation: pulse-anim 2s infinite; }
+    .pulse { width: 8px; height: 8px; background: var(--primary-color); border-radius: 50%; animation: pulse-anim 2s infinite; }
     @keyframes pulse-anim { 0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); } 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); } }
 
     .hero-asset { perspective: 2000px; }
     .dashboard-preview {
       max-width: 1100px; margin: 0 auto;
       transform: rotateX(10deg) translateY(0);
-      background: white; overflow: hidden;
+      background: var(--bg-card); overflow: hidden;
+      border: 1px solid var(--border-color);
     }
     
     .dot { width: 10px; height: 10px; border-radius: 50%; }
@@ -199,6 +202,7 @@ import { AppStateService } from '../../core/services/app-state.service';
     .feature-card-premium {
       border-radius: 1.5rem !important;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: var(--bg-card);
     }
     .feature-card-premium:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important; }
     

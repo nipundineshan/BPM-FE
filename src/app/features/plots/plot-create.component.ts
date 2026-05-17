@@ -11,46 +11,46 @@ import { PlotService } from '../../core/services/plot.service';
   template: `
     <div class="max-w-2xl mx-auto">
       <div class="mb-8">
-        <h1 class="text-2xl font-bold text-slate-900">Add New Property</h1>
+        <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Add New Property</h1>
         <p class="text-slate-500">Enter the details of the property you want to tokenize.</p>
       </div>
 
-      <form [formGroup]="plotForm" (ngSubmit)="onSubmit()" class="space-y-6 bg-white p-8 rounded-xl shadow-sm border border-slate-200">
+      <form [formGroup]="plotForm" (ngSubmit)="onSubmit()" class="space-y-6 bg-white dark:bg-slate-900 p-8 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="col-span-2">
-            <label class="block text-sm font-medium text-slate-700 mb-1">Property Title</label>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Property Title</label>
             <input type="text" formControlName="title" placeholder="e.g. Luxury Villa in Beverly Hills"
-              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+              class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:text-white">
           </div>
 
           <div class="col-span-2">
-            <label class="block text-sm font-medium text-slate-700 mb-1">Location</label>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Location</label>
             <input type="text" formControlName="location" placeholder="Full Address"
-              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+              class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:text-white">
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Price (USD)</label>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Price (USD)</label>
             <input type="number" formControlName="price" placeholder="0.00"
-              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+              class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:text-white">
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Image URL (Optional)</label>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Image URL (Optional)</label>
             <input type="text" formControlName="imageUrl" placeholder="https://..."
-              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-primary-500 focus:border-primary-500">
+              class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:text-white">
           </div>
 
           <div class="col-span-2">
-            <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
             <textarea formControlName="description" rows="4" placeholder="Detailed property description..."
-              class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"></textarea>
+              class="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:text-white"></textarea>
           </div>
         </div>
 
-        <div class="flex items-center justify-end space-x-4 pt-4 border-t border-slate-100">
+        <div class="flex items-center justify-end space-x-4 pt-4 border-t border-slate-100 dark:border-slate-800">
           <button type="button" routerLink="/dashboard" 
-            class="px-6 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors">
+            class="px-6 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
             Cancel
           </button>
           <button type="submit" [disabled]="plotForm.invalid || loading"
