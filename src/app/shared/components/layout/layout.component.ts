@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
@@ -9,12 +9,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { map, shareReplay } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AppStateService } from '../../../core/services/app-state.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-layout',
@@ -29,220 +29,326 @@ import { inject } from '@angular/core';
     MatButtonModule,
     MatMenuModule,
     MatBadgeModule,
-    MatDividerModule
+    MatDividerModule,
+    MatTooltipModule
   ],
   template: `
-    <div class="layout-container" [class.dark-theme]="appState.theme() === 'dark'">
-      <mat-toolbar color="primary" class="top-navbar shadow-sm">
-        <button mat-icon-button (click)="sidenav.toggle()" aria-label="Toggle sidenav">
-          <mat-icon>menu</mat-icon>
-        </button>
-        <span class="logo ms-2">BPM Enterprise</span>
-        
-        <span class="spacer"></span>
-        
-        <button mat-icon-button class="me-2" (click)="appState.toggleTheme()">
-          <mat-icon>{{appState.theme() === 'light' ? 'dark_mode' : 'light_mode'}}</mat-icon>
-        </button>
-        
-        <button mat-icon-button class="me-2" matBadge="2" matBadgeColor="warn">
-          <mat-icon>notifications</mat-icon>
-        </button>
-        
-        <button mat-button [matMenuTriggerFor]="userMenu" class="user-profile">
-          <mat-icon>account_circle</mat-icon>
-          <span class="ms-2 d-none d-md-inline">{{appState.currentUser()?.fullName}}</span>
-          <mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
-        </button>
-        
-        <mat-menu #userMenu="matMenu">
-          <button mat-menu-item [routerLink]="['/', appState.currentUser()?.role?.toLowerCase(), 'profile']">
-            <mat-icon>person</mat-icon>
-            <span>My Profile</span>
-          </button>
-          <button mat-menu-item [routerLink]="['/', appState.currentUser()?.role?.toLowerCase(), 'settings']">
-            <mat-icon>settings</mat-icon>
-            <span>Settings</span>
-          </button>
-          <mat-divider></mat-divider>
-          <button mat-menu-item (click)="logout()">
-            <mat-icon>logout</mat-icon>
-            <span>Logout</span>
-          </button>
-        </mat-menu>
-      </mat-toolbar>
-
-      <mat-sidenav-container class="sidenav-container">
-        <mat-sidenav #sidenav [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="!(isHandset$ | async)" class="sidenav">
-          <mat-nav-list>
-            <div class="nav-header p-4 text-center">
-              <div class="avatar-container mb-2">
-                <mat-icon class="large-avatar">account_circle</mat-icon>
+    <div class="app-shell">
+      <!-- Navbar -->
+      <header class="navbar shadow-sm">
+        <div class="navbar-content">
+          <div class="d-flex align-items-center">
+            <button mat-icon-button (click)="sidenav.toggle()" class="me-2 d-lg-none">
+              <mat-icon>menu</mat-icon>
+            </button>
+            <div class="brand d-flex align-items-center gap-2">
+              <div class="logo-square">
+                <mat-icon class="text-white">business_center</mat-icon>
               </div>
-              <div class="fw-bold fs-5">{{appState.currentUser()?.fullName}}</div>
-              <div class="badge rounded-pill mt-1" [ngClass]="getRoleBadgeClass()">
-                {{appState.currentUser()?.role}}
+              <span class="brand-name d-none d-sm-block">BPM <span class="fw-light">Enterprise</span></span>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <!-- Theme Toggle -->
+            <button mat-icon-button (click)="appState.toggleTheme()" matTooltip="Toggle theme">
+              <mat-icon>{{appState.theme() === 'light' ? 'dark_mode' : 'light_mode'}}</mat-icon>
+            </button>
+            
+            <!-- Notifications -->
+            <button mat-icon-button matBadge="2" matBadgeColor="warn" matTooltip="Notifications">
+              <mat-icon>notifications</mat-icon>
+            </button>
+
+            <div class="v-divider"></div>
+
+            <!-- Profile Menu -->
+            <button mat-button [matMenuTriggerFor]="userMenu" class="profile-pill">
+              <div class="avatar-circle">
+                {{appState.currentUser()?.fullName?.charAt(0)}}
+              </div>
+              <span class="ms-2 d-none d-md-inline user-name">{{appState.currentUser()?.fullName}}</span>
+              <mat-icon class="ms-1 tiny-icon">expand_more</mat-icon>
+            </button>
+            
+            <mat-menu #userMenu="matMenu" class="profile-dropdown">
+              <div class="dropdown-header p-3 border-bottom">
+                <div class="fw-bold">{{appState.currentUser()?.fullName}}</div>
+                <div class="small text-muted">{{appState.currentUser()?.email}}</div>
+              </div>
+              <button mat-menu-item [routerLink]="['/', appState.currentUser()?.role?.toLowerCase(), 'profile']">
+                <mat-icon>person_outline</mat-icon>
+                <span>Account Settings</span>
+              </button>
+              <button mat-menu-item (click)="appState.toggleTheme()">
+                <mat-icon>{{appState.theme() === 'light' ? 'dark_mode' : 'light_mode'}}</mat-icon>
+                <span>{{appState.theme() === 'light' ? 'Dark' : 'Light'}} Mode</span>
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="logout()" class="text-danger">
+                <mat-icon class="text-danger">logout</mat-icon>
+                <span>Sign Out</span>
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+      </header>
+
+      <mat-sidenav-container class="main-container">
+        <!-- Sidebar -->
+        <mat-sidenav #sidenav 
+          [mode]="(isHandset$ | async) ? 'over' : 'side'" 
+          [opened]="!(isHandset$ | async)" 
+          class="sidebar border-end">
+          
+          <div class="sidebar-wrapper">
+            <mat-nav-list class="nav-list">
+              <!-- Workspace Section -->
+              <div class="nav-section">
+                <h3 class="nav-label">Workspace</h3>
+                
+                <!-- Super Admin Menu -->
+                <ng-container *ngIf="appState.isSuperAdmin()">
+                  <a mat-list-item routerLink="/super-admin/dashboard" routerLinkActive="active-item">
+                    <mat-icon matListItemIcon>grid_view</mat-icon>
+                    <span matListItemTitle>System Overview</span>
+                  </a>
+                  <a mat-list-item routerLink="/super-admin/admins" routerLinkActive="active-item">
+                    <mat-icon matListItemIcon>manage_accounts</mat-icon>
+                    <span matListItemTitle>Manage Admins</span>
+                  </a>
+                </ng-container>
+
+                <!-- Admin Menu -->
+                <ng-container *ngIf="appState.isAdmin()">
+                  <a mat-list-item routerLink="/admin/dashboard" routerLinkActive="active-item">
+                    <mat-icon matListItemIcon>insights</mat-icon>
+                    <span matListItemTitle>Performance</span>
+                  </a>
+                  <a mat-list-item routerLink="/admin/user-approvals" routerLinkActive="active-item">
+                    <mat-icon matListItemIcon>assignment_ind</mat-icon>
+                    <span matListItemTitle>User Approvals</span>
+                  </a>
+                  <a mat-list-item routerLink="/admin/plot-approvals" routerLinkActive="active-item">
+                    <mat-icon matListItemIcon>verified_user</mat-icon>
+                    <span matListItemTitle>Property Verification</span>
+                  </a>
+                  <a mat-list-item routerLink="/admin/nft-minting" routerLinkActive="active-item">
+                    <mat-icon matListItemIcon>token</mat-icon>
+                    <span matListItemTitle>NFT Engine</span>
+                  </a>
+                </ng-container>
+
+                <!-- User Menu -->
+                <ng-container *ngIf="appState.isUser()">
+                  <a mat-list-item routerLink="/user/dashboard" routerLinkActive="active-item">
+                    <mat-icon matListItemIcon>dashboard_customize</mat-icon>
+                    <span matListItemTitle>Dashboard</span>
+                  </a>
+                  <a mat-list-item routerLink="/user/register-plot" routerLinkActive="active-item">
+                    <mat-icon matListItemIcon>add_circle_outline</mat-icon>
+                    <span matListItemTitle>Register Property</span>
+                  </a>
+                  <a mat-list-item routerLink="/user/my-plots" routerLinkActive="active-item">
+                    <mat-icon matListItemIcon>maps_home_work</mat-icon>
+                    <span matListItemTitle>My Assets</span>
+                  </a>
+                </ng-container>
+              </div>
+
+              <div class="spacer"></div>
+
+              <!-- Management Section -->
+              <div class="nav-section mt-auto border-top pt-3">
+                 <h3 class="nav-label">System</h3>
+                 <a mat-list-item routerLink="/user/profile" routerLinkActive="active-item">
+                    <mat-icon matListItemIcon>settings</mat-icon>
+                    <span matListItemTitle>Settings</span>
+                  </a>
+                  <a mat-list-item (click)="logout()" class="logout-item">
+                    <mat-icon matListItemIcon color="warn">logout</mat-icon>
+                    <span matListItemTitle class="text-danger">Sign Out</span>
+                  </a>
+              </div>
+            </mat-nav-list>
+
+            <!-- Bottom Branding -->
+            <div class="sidebar-footer">
+              <div class="role-card" [ngClass]="getRoleBadgeClass()">
+                <div class="small fw-bold">{{appState.currentUser()?.role?.replace('_', ' ')}}</div>
+                <div class="tiny opacity-75">Full Access</div>
               </div>
             </div>
-            
-            <mat-divider></mat-divider>
-            
-            <!-- Super Admin Navigation -->
-            <ng-container *ngIf="appState.isSuperAdmin()">
-              <div mat-subheader class="text-uppercase small fw-bold mt-2">Super Admin Console</div>
-              <a mat-list-item routerLink="/super-admin/dashboard" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>analytics</mat-icon>
-                <span matListItemTitle>System Overview</span>
-              </a>
-              <a mat-list-item routerLink="/super-admin/admins" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>supervisor_account</mat-icon>
-                <span matListItemTitle>Manage Admins</span>
-              </a>
-              <a mat-list-item routerLink="/super-admin/users" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>people</mat-icon>
-                <span matListItemTitle>System Users</span>
-              </a>
-              <a mat-list-item routerLink="/super-admin/plots" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>location_city</mat-icon>
-                <span matListItemTitle>Property Inventory</span>
-              </a>
-              <a mat-list-item routerLink="/super-admin/audit-logs" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>receipt_long</mat-icon>
-                <span matListItemTitle>Audit Logs</span>
-              </a>
-              <a mat-list-item routerLink="/super-admin/settings" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>admin_panel_settings</mat-icon>
-                <span matListItemTitle>System Settings</span>
-              </a>
-            </ng-container>
-
-            <!-- Admin Navigation -->
-            <ng-container *ngIf="appState.isAdmin()">
-              <div mat-subheader class="text-uppercase small fw-bold mt-2">Admin Dashboard</div>
-              <a mat-list-item routerLink="/admin/dashboard" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>dashboard</mat-icon>
-                <span matListItemTitle>Admin Insights</span>
-              </a>
-              <a mat-list-item routerLink="/admin/user-approvals" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>how_to_reg</mat-icon>
-                <span matListItemTitle>User Approvals</span>
-              </a>
-              <a mat-list-item routerLink="/admin/plot-approvals" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>verified</mat-icon>
-                <span matListItemTitle>Plot Verifications</span>
-              </a>
-              <a mat-list-item routerLink="/admin/nft-minting" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>token</mat-icon>
-                <span matListItemTitle>NFT Minting</span>
-              </a>
-              <a mat-list-item routerLink="/admin/users" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>people</mat-icon>
-                <span matListItemTitle>User List</span>
-              </a>
-            </ng-container>
-
-            <!-- User Navigation -->
-            <ng-container *ngIf="appState.isUser()">
-              <div mat-subheader class="text-uppercase small fw-bold mt-2">User Workspace</div>
-              <a mat-list-item routerLink="/user/dashboard" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>dashboard</mat-icon>
-                <span matListItemTitle>My Dashboard</span>
-              </a>
-              <a mat-list-item routerLink="/user/register-plot" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>add_location_alt</mat-icon>
-                <span matListItemTitle>Register Property</span>
-              </a>
-              <a mat-list-item routerLink="/user/my-plots" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>holiday_village</mat-icon>
-                <span matListItemTitle>My Portfolio</span>
-              </a>
-              <a mat-list-item routerLink="/user/profile" routerLinkActive="active-link">
-                <mat-icon matListItemIcon>account_box</mat-icon>
-                <span matListItemTitle>My Profile</span>
-              </a>
-            </ng-container>
-
-            <mat-divider class="mt-2"></mat-divider>
-            <div mat-subheader class="text-uppercase small fw-bold">Support</div>
-            <a mat-list-item href="#" class="text-muted">
-              <mat-icon matListItemIcon>help_outline</mat-icon>
-              <span matListItemTitle>Help Center</span>
-            </a>
-          </mat-nav-list>
+          </div>
         </mat-sidenav>
 
-        <mat-sidenav-content class="main-content">
-          <div class="container-fluid py-4">
+        <!-- Main Content -->
+        <mat-sidenav-content class="content-area">
+          <main class="page-container">
             <router-outlet></router-outlet>
-          </div>
+          </main>
         </mat-sidenav-content>
       </mat-sidenav-container>
     </div>
   `,
   styles: [`
-    .layout-container {
+    .app-shell {
       display: flex;
       flex-direction: column;
       height: 100vh;
+      background-color: var(--bg-app);
     }
-    .top-navbar {
+
+    .navbar {
+      height: var(--navbar-height);
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
       z-index: 1000;
-      position: sticky;
-      top: 0;
-      background: linear-gradient(90deg, #1a237e 0%, #3f51b5 100%) !important;
+      padding: 0 1.5rem;
     }
-    .spacer {
-      flex: 1 1 auto;
+
+    .navbar-content {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .sidenav-container {
+
+    .brand {
+      cursor: pointer;
+    }
+
+    .logo-square {
+      width: 32px;
+      height: 32px;
+      background: var(--primary-color);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-name {
+      font-weight: 700;
+      font-size: 1.25rem;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+    }
+
+    .v-divider {
+      width: 1px;
+      height: 24px;
+      background-color: var(--border-color);
+      margin: 0 0.5rem;
+    }
+
+    .profile-pill {
+      background: rgba(0,0,0,0.03);
+      padding: 4px 8px 4px 4px !important;
+      border-radius: 9999px !important;
+      height: 40px;
+    }
+
+    .avatar-circle {
+      width: 32px;
+      height: 32px;
+      background: var(--primary-color);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .user-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .tiny-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    .main-container {
       flex: 1;
     }
-    .sidenav {
-      width: 280px;
-      background-color: #ffffff;
-      border-right: none;
-      box-shadow: 4px 0 10px rgba(0,0,0,0.03);
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--bg-sidebar);
+      border: none;
     }
-    .main-content {
-      background-color: #f8fafc;
+
+    .sidebar-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 1.5rem 1rem;
     }
-    .logo {
-      font-weight: 800;
-      font-size: 1.4rem;
-      letter-spacing: -0.5px;
+
+    .nav-section {
+      margin-bottom: 2rem;
     }
-    .active-link {
-      background-color: #eef2ff !important;
-      color: #3f51b5 !important;
+
+    .nav-label {
+      font-size: 0.75rem;
       font-weight: 600;
-      border-right: 4px solid #3f51b5;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin: 0 1rem 0.75rem;
     }
-    .nav-header {
-      background: #fcfcfc;
+
+    .nav-list a {
+      margin-bottom: 0.25rem;
+      border-radius: 10px !important;
+      color: var(--text-secondary);
+      transition: all 0.2s;
     }
-    .large-avatar {
-      font-size: 72px;
-      width: 72px;
-      height: 72px;
-      color: #e2e8f0;
+
+    .nav-list a:hover {
+      background-color: rgba(99, 102, 241, 0.05);
+      color: var(--primary-color);
     }
-    .badge {
-      font-size: 0.7rem;
-      padding: 0.35em 0.8em;
+
+    .active-item {
+      background-color: rgba(99, 102, 241, 0.1) !important;
+      color: var(--primary-color) !important;
+      font-weight: 600;
     }
-    
-    /* Dark Theme Support */
-    .dark-theme .sidenav {
-      background-color: #1a1a1a;
-      color: white;
+
+    .active-item mat-icon {
+      color: var(--primary-color) !important;
     }
-    .dark-theme .main-content {
-      background-color: #0f0f0f;
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 1rem;
     }
-    .dark-theme .active-link {
-      background-color: rgba(63, 81, 181, 0.15) !important;
-      color: #90caf9 !important;
-      border-right: 4px solid #90caf9;
+
+    .role-card {
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .role-card.bg-danger { background: rgba(239, 68, 68, 0.1) !important; color: #ef4444 !important; }
+    .role-card.bg-primary { background: rgba(99, 102, 241, 0.1) !important; color: #6366f1 !important; }
+    .role-card.bg-success { background: rgba(16, 185, 129, 0.1) !important; color: #10b981 !important; }
+
+    .content-area {
+      background-color: var(--bg-app);
+    }
+
+    .page-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 2rem;
     }
   `]
 })

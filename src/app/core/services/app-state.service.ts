@@ -54,10 +54,11 @@ export class AppStateService {
   }
 
   private updateThemeClass(theme: 'light' | 'dark') {
+    const root = document.documentElement;
     if (theme === 'dark') {
-      document.body.classList.add('dark-theme');
+      root.classList.add('dark-theme');
     } else {
-      document.body.classList.remove('dark-theme');
+      root.classList.remove('dark-theme');
     }
   }
 }

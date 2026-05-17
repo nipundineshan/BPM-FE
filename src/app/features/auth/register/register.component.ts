@@ -25,121 +25,148 @@ import { AuthService } from '../../../core/services/auth.service';
     MatProgressBarModule
   ],
   template: `
-    <div class="auth-container">
-      <mat-card class="auth-card shadow-lg">
-        <mat-card-header class="mb-4">
-          <mat-card-title class="fs-2 fw-bold text-primary">Join BPM System</mat-card-title>
-          <mat-card-subtitle>Create your property management account</mat-card-subtitle>
-        </mat-card-header>
-        
-        <mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
+    <div class="auth-wrapper animate-fade-in">
+      <div class="auth-inner">
+        <!-- Header -->
+        <div class="text-center mb-5">
+           <div class="logo-box mx-auto mb-3 shadow-sm">
+              <mat-icon class="text-white">business_center</mat-icon>
+           </div>
+           <h1 class="h3 fw-bold tracking-tight text-slate-900">Create your account</h1>
+           <p class="text-slate-500 small">Join the enterprise property management network</p>
+        </div>
 
-        <mat-card-content>
-          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>Full Name</mat-label>
-                  <input matInput formControlName="fullName" placeholder="John Doe">
-                  <mat-icon matSuffix>person</mat-icon>
-                  <mat-error *ngIf="registerForm.get('fullName')?.hasError('required')">Full name is required</mat-error>
-                </mat-form-field>
-              </div>
-              <div class="col-md-6">
-                <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>Email Address</mat-label>
-                  <input matInput type="email" formControlName="email" placeholder="john@example.com">
-                  <mat-icon matSuffix>email</mat-icon>
-                  <mat-error *ngIf="registerForm.get('email')?.hasError('required')">Email is required</mat-error>
-                  <mat-error *ngIf="registerForm.get('email')?.hasError('email')">Enter a valid email</mat-error>
-                </mat-form-field>
-              </div>
+        <mat-card class="auth-card-premium border-0 shadow-xl overflow-hidden">
+          <mat-progress-bar *ngIf="isLoading" mode="indeterminate" class="top-progress"></mat-progress-bar>
+
+          <mat-card-content class="p-4 p-md-5">
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="d-flex flex-column gap-1">
               
-              <div class="col-md-6">
-                <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>Phone Number</mat-label>
-                  <input matInput formControlName="phoneNumber" placeholder="+1 234 567 890">
-                  <mat-icon matSuffix>phone</mat-icon>
-                  <mat-error *ngIf="registerForm.get('phoneNumber')?.hasError('required')">Phone number is required</mat-error>
-                </mat-form-field>
-              </div>
-              <div class="col-md-6">
-                <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>Government ID</mat-label>
-                  <input matInput formControlName="governmentId" placeholder="ID Number / Passport">
-                  <mat-icon matSuffix>badge</mat-icon>
-                  <mat-error *ngIf="registerForm.get('governmentId')?.hasError('required')">Government ID is required</mat-error>
-                </mat-form-field>
-              </div>
-
-              <div class="col-12">
-                <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>Wallet Address</mat-label>
-                  <input matInput formControlName="walletAddress" placeholder="0x...">
-                  <mat-icon matSuffix>account_balance_wallet</mat-icon>
-                  <mat-error *ngIf="registerForm.get('walletAddress')?.hasError('required')">Wallet address is required</mat-error>
-                </mat-form-field>
+              <!-- Section: Personal Info -->
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <mat-form-field appearance="outline" class="w-100 custom-field">
+                    <mat-label>Full Name</mat-label>
+                    <input matInput formControlName="fullName" placeholder="John Doe">
+                    <mat-icon matSuffix class="text-slate-400">person_outline</mat-icon>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-6">
+                  <mat-form-field appearance="outline" class="w-100 custom-field">
+                    <mat-label>Email Address</mat-label>
+                    <input matInput type="email" formControlName="email" placeholder="name@company.com">
+                    <mat-icon matSuffix class="text-slate-400">mail_outline</mat-icon>
+                  </mat-form-field>
+                </div>
               </div>
 
-              <div class="col-12">
-                <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>Residential Address</mat-label>
-                  <textarea matInput formControlName="address" placeholder="123 Street, City, ZIP, Country" rows="2"></textarea>
-                  <mat-icon matSuffix>home</mat-icon>
-                  <mat-error *ngIf="registerForm.get('address')?.hasError('required')">Address is required</mat-error>
-                </mat-form-field>
+              <!-- Section: Identity & Contact -->
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <mat-form-field appearance="outline" class="w-100 custom-field">
+                    <mat-label>Phone Number</mat-label>
+                    <input matInput formControlName="phoneNumber" placeholder="+1 (555) 000-0000">
+                    <mat-icon matSuffix class="text-slate-400">phone_iphone</mat-icon>
+                  </mat-form-field>
+                </div>
+                <div class="col-md-6">
+                  <mat-form-field appearance="outline" class="w-100 custom-field">
+                    <mat-label>Government ID</mat-label>
+                    <input matInput formControlName="governmentId" placeholder="Passport or National ID">
+                    <mat-icon matSuffix class="text-slate-400">badge</mat-icon>
+                  </mat-form-field>
+                </div>
               </div>
 
-              <div class="col-12">
-                <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>Password</mat-label>
-                  <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
-                  <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
-                    <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
-                  </button>
-                  <mat-error *ngIf="registerForm.get('password')?.hasError('required')">Password is required</mat-error>
-                  <mat-error *ngIf="registerForm.get('password')?.hasError('minlength')">Min 6 characters required</mat-error>
-                </mat-form-field>
+              <mat-form-field appearance="outline" class="w-100 custom-field mb-3">
+                <mat-label>Web3 Wallet Address</mat-label>
+                <input matInput formControlName="walletAddress" placeholder="0x...">
+                <mat-icon matSuffix class="text-slate-400">account_balance_wallet</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-100 custom-field mb-3">
+                <mat-label>Residential Address</mat-label>
+                <textarea matInput formControlName="address" placeholder="Street, City, ZIP, Country" rows="2"></textarea>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="w-100 custom-field mb-4">
+                <mat-label>Security Password</mat-label>
+                <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
+                <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button" class="text-slate-400">
+                  <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+                </button>
+              </mat-form-field>
+
+              <div class="info-alert p-3 rounded-3 mb-4 d-flex align-items-start gap-2">
+                <mat-icon class="text-amber fs-5">info_outline</mat-icon>
+                <div class="tiny fw-medium text-slate-600">
+                  Account security notice: Your registration will be verified by a system administrator before full access is granted.
+                </div>
               </div>
-            </div>
 
-            <div class="alert alert-warning border-0 mt-3 d-flex align-items-center">
-              <mat-icon class="me-2">info</mat-icon>
-              <small>Your account will be <strong>pending approval</strong> by an administrator after signup.</small>
-            </div>
-
-            <div class="d-grid gap-2 mt-4">
-              <button mat-raised-button color="primary" type="submit" [disabled]="registerForm.invalid || isLoading" class="py-3 fs-6 rounded-3 shadow">
-                Create Account
+              <button mat-flat-button color="primary" type="submit" 
+                [disabled]="registerForm.invalid || isLoading" 
+                class="py-3 fs-6 rounded-3 shadow-sm w-100">
+                Create Enterprise Account
               </button>
-            </div>
-          </form>
-        </mat-card-content>
+            </form>
+          </mat-card-content>
 
-        <mat-card-footer class="text-center p-4">
-          <span class="text-muted">Already have an account? 
-            <a routerLink="/auth/login" class="text-primary text-decoration-none fw-bold">Sign In</a>
-          </span>
-        </mat-card-footer>
-      </mat-card>
+          <div class="auth-footer bg-slate-50 p-4 text-center border-top">
+            <span class="text-slate-500 small">Already have an account? 
+              <a routerLink="/auth/login" class="text-primary text-decoration-none fw-bold ms-1">Sign In</a>
+            </span>
+          </div>
+        </mat-card>
+
+        <div class="mt-5 text-center">
+           <p class="tiny text-slate-400 fw-medium letter-spacing-1 uppercase">© 2026 BPM ENTERPRISE SYSTEM</p>
+        </div>
+      </div>
     </div>
   `,
   styles: [`
-    .auth-container {
+    .auth-wrapper {
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #f5f7fb 0%, #e8f0fe 100%);
-      padding: 40px 20px;
+      background-color: #f8fafc;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.05) 0px, transparent 50%);
+      padding: 40px 24px;
     }
-    .auth-card {
+    .auth-inner {
       width: 100%;
-      max-width: 750px;
-      border-radius: 24px;
-      overflow: hidden;
-      border: none;
+      max-width: 640px;
     }
+    .logo-box {
+      width: 48px;
+      height: 48px;
+      background: var(--primary-color);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-card-premium {
+      border-radius: 1.5rem !important;
+    }
+    .top-progress {
+      height: 4px;
+      position: absolute;
+      top: 0; left: 0; right: 0;
+    }
+    .info-alert {
+      background-color: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    .text-amber { color: #f59e0b; }
+    .bg-slate-50 { background-color: #f8fafc; }
+    
+    .animate-fade-in { animation: fadeIn 0.6s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   `]
 })
 export class RegisterComponent {
