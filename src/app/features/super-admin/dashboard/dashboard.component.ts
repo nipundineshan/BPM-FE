@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
+import { PlotService } from '../../../core/services/plot.service';
 
 @Component({
   selector: 'app-super-admin-dashboard',
@@ -79,18 +80,18 @@ import { ChartConfiguration, ChartData } from 'chart.js';
                   [type]="'doughnut'">
                 </canvas>
               </div>
-              <div class="w-100">
+              <div class="w-100" *ngIf="distributionData">
                 <div class="d-flex justify-content-between mb-2 pb-2 border-bottom">
                   <span>Admins</span>
-                  <span class="fw-bold">12 Active</span>
+                  <span class="fw-bold">{{distributionData.admins}} Active</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2 pb-2 border-bottom">
                   <span>Registered Users</span>
-                  <span class="fw-bold">1,248 Total</span>
+                  <span class="fw-bold">{{distributionData.users}} Total</span>
                 </div>
                 <div class="d-flex justify-content-between">
                   <span>Pending Approval</span>
-                  <span class="fw-bold text-warning">42 Requests</span>
+                  <span class="fw-bold text-warning">{{distributionData.pending}} Requests</span>
                 </div>
               </div>
             </mat-card-content>
@@ -103,13 +104,13 @@ import { ChartConfiguration, ChartData } from 'chart.js';
         <h4 class="fw-bold mb-3">Administrative Controls</h4>
         <div class="row g-3">
           <div class="col-md-3">
-            <button mat-stroked-button color="primary" class="w-100 py-3 rounded-3 h-100">
+            <button mat-stroked-button color="primary" class="w-100 py-3 rounded-3 h-100" routerLink="/super-admin/admins">
               <mat-icon class="mb-1 d-block mx-auto fs-1">person_add</mat-icon>
-              Create New Admin
+              Manage Admins
             </button>
           </div>
           <div class="col-md-3">
-            <button mat-stroked-button color="accent" class="w-100 py-3 rounded-3 h-100">
+            <button mat-stroked-button color="accent" class="w-100 py-3 rounded-3 h-100" routerLink="/super-admin/audit-logs">
               <mat-icon class="mb-1 d-block mx-auto fs-1">history</mat-icon>
               View System Logs
             </button>
@@ -172,18 +173,20 @@ import { ChartConfiguration, ChartData } from 'chart.js';
   `]
 })
 export class DashboardComponent implements OnInit {
-  stats = [
-    { label: 'Total Users', value: '1,248', icon: 'people', color: '#6366f1' },
-    { label: 'Active Admins', value: '12', icon: 'admin_panel_settings', color: '#10b981' },
-    { label: 'Pending Plots', value: '42', icon: 'pending_actions', color: '#f59e0b' },
-    { label: 'NFTs Minted', value: '385', icon: 'token', color: '#ec4899' }
+  stats: any[] = [
+    { label: 'Total Users', value: '0', icon: 'people', color: '#6366f1' },
+    { label: 'Active Admins', value: '0', icon: 'admin_panel_settings', color: '#10b981' },
+    { label: 'Pending Plots', value: '0', icon: 'pending_actions', color: '#f59e0b' },
+    { label: 'NFTs Minted', value: '0', icon: 'token', color: '#ec4899' }
   ];
 
+  distributionData: any = null;
+
   public lineChartData: ChartData<'line'> = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    labels: [],
     datasets: [
       {
-        data: [65, 59, 80, 81, 56, 55],
+        data: [],
         label: 'Signups',
         borderColor: '#6366f1',
         backgroundColor: 'rgba(99, 102, 241, 0.1)',
@@ -191,7 +194,7 @@ export class DashboardComponent implements OnInit {
         tension: 0.4
       },
       {
-        data: [28, 48, 40, 19, 86, 27],
+        data: [],
         label: 'Verifications',
         borderColor: '#10b981',
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -216,7 +219,7 @@ export class DashboardComponent implements OnInit {
   public pieChartData: ChartData<'doughnut'> = {
     labels: ['Admins', 'Users', 'Pending'],
     datasets: [{
-      data: [12, 1248, 42],
+      data: [0, 0, 0],
       backgroundColor: ['#10b981', '#6366f1', '#f59e0b'],
       hoverOffset: 4
     }]
@@ -230,7 +233,46 @@ export class DashboardComponent implements OnInit {
     }
   };
 
-  constructor() {}
+  constructor(private plotService: PlotService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadGlobalStats();
+  }
+
+  loadGlobalStats() {
+    this.plotService.getGlobalStats().subscribe({
+      next: (data) => {
+        if (data.overview) {
+          this.stats = [
+            { label: 'Total Users', value: data.overview.totalUsers, icon: 'people', color: '#6366f1' },
+            { label: 'Active Admins', value: data.overview.activeAdmins, icon: 'admin_panel_settings', color: '#10b981' },
+            { label: 'Pending Plots', value: data.overview.pendingPlots, icon: 'pending_actions', color: '#f59e0b' },
+            { label: 'NFTs Minted', value: data.overview.mintedNfts, icon: 'token', color: '#ec4899' }
+          ];
+        }
+
+        if (data.activityChart) {
+          this.lineChartData = {
+            labels: data.activityChart.labels,
+            datasets: [
+              { ...this.lineChartData.datasets[0], data: data.activityChart.signups },
+              { ...this.lineChartData.datasets[1], data: data.activityChart.verifications }
+            ]
+          };
+        }
+
+        if (data.distribution) {
+          this.distributionData = data.distribution;
+          this.pieChartData = {
+            labels: ['Admins', 'Users', 'Pending'],
+            datasets: [{
+              ...this.pieChartData.datasets[0],
+              data: [data.distribution.admins, data.distribution.users, data.distribution.pending]
+            }]
+          };
+        }
+      },
+      error: (err) => console.error('Error fetching global stats', err)
+    });
+  }
 }

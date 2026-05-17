@@ -4,6 +4,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { ActivityLog } from '../../../core/models';
+import { UserService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-audit-logs',
@@ -70,17 +72,20 @@ import { MatChipsModule } from '@angular/material/chips';
 })
 export class AuditLogsComponent implements OnInit {
   displayedColumns: string[] = ['timestamp', 'action', 'details', 'userId'];
-  
-  logs = [
-    { timestamp: new Date(), action: 'ADMIN_CREATED', details: 'New administrator account created for Regional Head', userId: 'SUPER_ADMIN' },
-    { timestamp: new Date(Date.now() - 3600000), action: 'USER_APPROVED', details: 'User Alice Johnson (alice@example.com) approved', userId: 'ADMIN_02' },
-    { timestamp: new Date(Date.now() - 7200000), action: 'NFT_MINTED', details: 'NFT minted for Plot #8821. Token ID: 1022', userId: 'ADMIN_01' },
-    { timestamp: new Date(Date.now() - 86400000), action: 'SYSTEM_BOOT', details: 'Platform services restarted and SUPER_ADMIN bootstrapped', userId: 'SYSTEM' }
-  ];
+  logs: ActivityLog[] = [];
 
-  constructor() {}
+  constructor(private userService: UserService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadLogs();
+  }
+
+  loadLogs() {
+    this.userService.getGlobalAuditLogs().subscribe({
+      next: (logs) => this.logs = logs,
+      error: (err) => console.error('Error loading global audit logs', err)
+    });
+  }
 
   getActionClass(action: string) {
     if (action.includes('CREATED')) return 'bg-success';

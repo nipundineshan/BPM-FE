@@ -1,13 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { Plot, PlotStatus } from '../../../core/models';
+import { PlotService } from '../../../core/services/plot.service';
+import { NftService } from '../../../core/services/nft.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-approval-management',
@@ -41,7 +44,7 @@ import { Plot, PlotStatus } from '../../../core/models';
               <div class="row g-0">
                 <div class="col-md-3">
                   <img
-                    [src]="plot.imageUrl"
+                    [src]="plot.imageUrl || 'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=400'"
                     class="img-fluid rounded-start h-100"
                     style="object-fit: cover;"
                     alt="Plot Image"
@@ -124,7 +127,7 @@ import { Plot, PlotStatus } from '../../../core/models';
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="d-flex align-items-center">
                     <img
-                      [src]="plot.imageUrl"
+                      [src]="plot.imageUrl || 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=400'"
                       class="rounded me-3"
                       style="width: 60px; height: 60px; object-fit: cover;"
                     />
@@ -144,8 +147,10 @@ import { Plot, PlotStatus } from '../../../core/models';
                       mat-raised-button
                       color="accent"
                       (click)="mintNft(plot)"
+                      [disabled]="isMinting === plot.id"
                     >
-                      <mat-icon>token</mat-icon> Mint NFT
+                      <mat-icon>token</mat-icon> 
+                      {{ isMinting === plot.id ? 'Minting...' : 'Mint NFT' }}
                     </button>
                     <span
                       *ngIf="plot.status === 'MINTED'"
@@ -178,7 +183,7 @@ import { Plot, PlotStatus } from '../../../core/models';
                       Rejected on {{ plot.createdAt | date }}
                     </p>
                   </div>
-                  <button mat-button color="primary">Review History</button>
+                  <button mat-button color="primary" (click)="viewDetails(plot)">Review Details</button>
                 </div>
               </mat-card-content>
             </mat-card>
@@ -210,68 +215,26 @@ import { Plot, PlotStatus } from '../../../core/models';
   ],
 })
 export class ApprovalManagementComponent implements OnInit {
-  plots: Plot[] = [
-    {
-      id: '1',
-      title: 'Luxury Villa - North Hill',
-      description: 'desc',
-      location: 'California',
-      district: 'Hillside',
-      latitude: 0,
-      longitude: 0,
-      price: 1500000,
-      areaSize: 3500,
-      imageUrl:
-        'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=400',
-      status: 'PENDING_APPROVAL',
-      ownerId: 'user1',
-      isMinted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: '2',
-      title: 'Modern Studio Apartment',
-      description: 'desc',
-      location: 'New York',
-      district: 'Manhattan',
-      latitude: 0,
-      longitude: 0,
-      price: 850000,
-      areaSize: 1200,
-      imageUrl:
-        'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=400',
-      status: 'APPROVED',
-      ownerId: 'user2',
-      isMinted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-    {
-      id: '3',
-      title: 'Silicon Valley Office Space',
-      description: 'desc',
-      location: 'Palo Alto',
-      district: 'Tech Hub',
-      latitude: 0,
-      longitude: 0,
-      price: 4500000,
-      areaSize: 8000,
-      imageUrl:
-        'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=400',
-      status: 'MINTED',
-      ownerId: 'user3',
-      isMinted: true,
-      tokenId: '1024',
-      transactionHash: '0xabc...123',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    },
-  ];
+  private plotService = inject(PlotService);
+  private nftService = inject(NftService);
+  private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
 
-  constructor(private snackBar: MatSnackBar) {}
+  plots: Plot[] = [];
+  isMinting: string | null = null;
 
-  ngOnInit(): void {}
+  constructor() {}
+
+  ngOnInit(): void {
+    this.loadPlots();
+  }
+
+  loadPlots() {
+    this.plotService.getAllPlots().subscribe({
+      next: (plots) => this.plots = plots || [],
+      error: (err) => console.error('Error loading plots', err)
+    });
+  }
 
   get pendingPlots() {
     return this.plots.filter((p) => p.status === 'PENDING_APPROVAL');
@@ -286,39 +249,50 @@ export class ApprovalManagementComponent implements OnInit {
   }
 
   approvePlot(plot: Plot) {
-    plot.status = 'APPROVED';
-    this.snackBar.open(`Plot "${plot.title}" approved successfully!`, 'Close', {
-      duration: 3000,
+    this.plotService.approvePlot(plot.id).subscribe({
+      next: (updated) => {
+        plot.status = 'APPROVED';
+        this.snackBar.open(`Plot "${plot.title}" approved successfully!`, 'Close', { duration: 3000 });
+      },
+      error: (err) => this.snackBar.open('Approval failed', 'Close', { duration: 3000 })
     });
   }
 
   rejectPlot(plot: Plot) {
     const reason = prompt('Enter rejection reason:');
     if (reason) {
-      plot.status = 'REJECTED';
-      plot.rejectionReason = reason;
-      this.snackBar.open(`Plot "${plot.title}" rejected.`, 'Close', {
-        duration: 3000,
+      this.plotService.rejectPlot(plot.id, reason).subscribe({
+        next: () => {
+          plot.status = 'REJECTED';
+          plot.rejectionReason = reason;
+          this.snackBar.open(`Plot "${plot.title}" rejected.`, 'Close', { duration: 3000 });
+        },
+        error: () => this.snackBar.open('Rejection failed', 'Close', { duration: 3000 })
       });
     }
   }
 
   viewDetails(plot: Plot) {
-    alert(`Viewing details for ${plot.title}`);
+    this.router.navigate(['/admin/plot-details', plot.id]);
   }
 
   mintNft(plot: Plot) {
-    this.snackBar.open(`Initiating NFT Minting for ${plot.title}...`, 'Close', {
-      duration: 2000,
+    this.isMinting = plot.id;
+    this.snackBar.open(`Initiating NFT Minting for ${plot.title}...`, 'Close', { duration: 2000 });
+    
+    this.nftService.mintNft(plot.id).subscribe({
+      next: (res) => {
+        plot.status = 'MINTED';
+        plot.isMinted = true;
+        plot.tokenId = res.tokenId;
+        plot.transactionHash = res.transactionHash;
+        this.isMinting = null;
+        this.snackBar.open('NFT Minted Successfully!', 'Close', { duration: 3000 });
+      },
+      error: (err) => {
+        this.isMinting = null;
+        this.snackBar.open('Minting failed: ' + (err.error?.message || 'Check wallet connection'), 'Close', { duration: 3000 });
+      }
     });
-    setTimeout(() => {
-      plot.status = 'MINTED';
-      plot.isMinted = true;
-      plot.tokenId = Math.floor(Math.random() * 10000).toString();
-      plot.transactionHash = '0x' + Math.random().toString(16).substring(2);
-      this.snackBar.open('NFT Minted Successfully!', 'Close', {
-        duration: 3000,
-      });
-    }, 2000);
   }
 }

@@ -9,6 +9,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatChipsModule } from '@angular/material/chips';
 import { Plot } from '../../../core/models';
 import { PlotService } from '../../../core/services/plot.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-nft-details',
@@ -26,7 +27,7 @@ import { PlotService } from '../../../core/services/plot.service';
   template: `
     <div class="container py-4" *ngIf="plot()">
       <div class="d-flex align-items-center mb-4">
-        <button mat-icon-button routerLink="/admin/nfts" class="me-2">
+        <button mat-icon-button routerLink="/user/dashboard" class="me-2">
           <mat-icon>arrow_back</mat-icon>
         </button>
         <h2 class="mb-0 fw-bold">NFT Asset Certificate</h2>
@@ -66,7 +67,7 @@ import { PlotService } from '../../../core/services/plot.service';
                 <mat-list-item>
                   <mat-icon matListItemIcon class="text-primary">token</mat-icon>
                   <div matListItemTitle class="small text-muted">Contract Address</div>
-                  <div matListItemLine class="fw-bold text-truncate">0x71C7656EC7ab88b098defB751B7401B5f6d8976F</div>
+                  <div matListItemLine class="fw-bold text-truncate">{{contractAddress}}</div>
                 </mat-list-item>
                 <mat-divider inset></mat-divider>
                 
@@ -145,15 +146,8 @@ import { PlotService } from '../../../core/services/plot.service';
 })
 export class NftDetailsComponent implements OnInit {
   plot = signal<Plot | null>(null);
-  
-  attributes = [
-    { trait_type: 'Property Type', value: 'Residential' },
-    { trait_type: 'Area Size', value: '3,500 sqft' },
-    { trait_type: 'District', value: 'Hillside' },
-    { trait_type: 'Price', value: '$1.5M' },
-    { trait_type: 'Verified', value: 'Yes' },
-    { trait_type: 'Network', value: 'Sepolia' }
-  ];
+  attributes: any[] = [];
+  contractAddress = environment.apiUrl.includes('localhost') ? '0x71C7656EC7ab88b098defB751B7401B5f6d8976F' : '0x0000000000000000000000000000000000000000';
 
   constructor(
     private route: ActivatedRoute,
@@ -165,7 +159,19 @@ export class NftDetailsComponent implements OnInit {
     if (id) {
       this.plotService.getPlotById(id).subscribe(p => {
         this.plot.set(p);
+        this.deriveAttributes(p);
       });
     }
+  }
+
+  deriveAttributes(p: Plot) {
+    this.attributes = [
+      { trait_type: 'Location', value: p.location },
+      { trait_type: 'Area Size', value: p.areaSize + ' sqft' },
+      { trait_type: 'District', value: p.district },
+      { trait_type: 'Price', value: '$' + p.price.toLocaleString() },
+      { trait_type: 'Minted', value: p.isMinted ? 'Yes' : 'No' },
+      { trait_type: 'Network', value: 'Sepolia' }
+    ];
   }
 }

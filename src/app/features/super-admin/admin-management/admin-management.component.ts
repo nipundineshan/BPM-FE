@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +11,7 @@ import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { User } from '../../../core/models';
+import { UserService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-admin-management',
@@ -82,7 +83,7 @@ import { User } from '../../../core/models';
 
       <!-- Admin List Table -->
       <mat-card class="border-0 shadow-sm rounded-4 overflow-hidden">
-        <mat-table [dataSource]="admins" class="w-100">
+        <mat-table [dataSource]="dataSource" class="w-100">
           <ng-container matColumnDef="fullName">
             <mat-header-cell *matHeaderCellDef class="fw-bold">Administrator</mat-header-cell>
             <mat-cell *matCellDef="let admin">
@@ -161,16 +162,13 @@ import { User } from '../../../core/models';
 export class AdminManagementComponent implements OnInit {
   private fb = inject(FormBuilder);
   private snackBar = inject(MatSnackBar);
+  private userService = inject(UserService);
 
   showAddForm = false;
   adminForm: FormGroup;
   displayedColumns: string[] = ['fullName', 'status', 'lastLogin', 'actions'];
   
-  admins: Partial<User>[] = [
-    { id: '1', fullName: 'System Admin 1', email: 'admin1@bpm.com', isActive: true, updatedAt: new Date().toISOString() },
-    { id: '2', fullName: 'Regional Head', email: 'head@bpm.com', isActive: true, updatedAt: new Date().toISOString() },
-    { id: '3', fullName: 'Verification Officer', email: 'verify@bpm.com', isActive: false, updatedAt: '' }
-  ];
+  dataSource = new MatTableDataSource<User>([]);
 
   constructor() {
     this.adminForm = this.fb.group({
@@ -180,27 +178,42 @@ export class AdminManagementComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadAdmins();
+  }
+
+  loadAdmins() {
+    this.userService.getAllAdmins().subscribe({
+      next: (admins) => {
+        this.dataSource.data = admins || [];
+      },
+      error: (err) => console.error('Error loading admins', err)
+    });
+  }
 
   onAddAdmin() {
     if (this.adminForm.valid) {
-      const newAdmin: Partial<User> = {
-        id: Math.random().toString(),
-        fullName: this.adminForm.value.fullName,
-        email: this.adminForm.value.email,
-        isActive: true,
-        updatedAt: new Date().toISOString()
-      };
-      this.admins = [...this.admins, newAdmin];
-      this.adminForm.reset();
-      this.showAddForm = false;
-      this.snackBar.open('New Administrator account created successfully!', 'Close', { duration: 3000 });
+      this.userService.createAdmin(this.adminForm.value).subscribe({
+        next: (newAdmin) => {
+          this.dataSource.data = [...this.dataSource.data, newAdmin];
+          this.adminForm.reset();
+          this.showAddForm = false;
+          this.snackBar.open('New Administrator account created successfully!', 'Close', { duration: 3000 });
+        },
+        error: (err) => console.error('Error creating admin', err)
+      });
     }
   }
 
-  toggleAdminStatus(admin: any) {
-    admin.isActive = !admin.isActive;
-    const msg = admin.isActive ? 'enabled' : 'disabled';
-    this.snackBar.open(`Administrator account ${admin.fullName} ${msg}.`, 'Close', { duration: 2000 });
+  toggleAdminStatus(admin: User) {
+    const newStatus = !admin.isActive;
+    this.userService.updateProfile({ id: admin.id, isActive: newStatus } as any).subscribe({
+      next: () => {
+        admin.isActive = newStatus;
+        const msg = admin.isActive ? 'enabled' : 'disabled';
+        this.snackBar.open(`Administrator account ${admin.fullName} ${msg}.`, 'Close', { duration: 2000 });
+      },
+      error: (err) => console.error('Error toggling admin status', err)
+    });
   }
 }

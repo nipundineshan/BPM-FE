@@ -196,12 +196,16 @@ export class ProfileComponent implements OnInit {
   onSubmit() {
     if (this.profileForm.valid) {
       this.isLoading = true;
-      // Mock update
-      setTimeout(() => {
-        this.appState.setUser({ ...this.appState.currentUser()!, ...this.profileForm.value });
-        this.snackBar.open('Profile updated successfully!', 'Close', { duration: 3000 });
-        this.isLoading = false;
-      }, 1000);
+      this.userService.updateProfile(this.profileForm.value).subscribe({
+        next: (updatedUser) => {
+          this.snackBar.open('Profile updated successfully!', 'Close', { duration: 3000 });
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.snackBar.open('Update failed: ' + (err.error?.message || 'Error'), 'Close', { duration: 3000 });
+          this.isLoading = false;
+        }
+      });
     }
   }
 

@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { User } from '../../../core/models';
+import { UserService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-user-management',
@@ -170,74 +171,25 @@ export class UserManagementComponent implements OnInit {
     'walletAddress',
     'actions',
   ];
-  dataSource: MatTableDataSource<User>;
+  dataSource = new MatTableDataSource<User>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor() {
-    // Mock Data
-    const users: User[] = [
-      {
-        id: '1',
-        fullName: 'Admin User',
-        email: 'admin@bpm.com',
-        role: 'ADMIN',
-        walletAddress: '0x1234...abcd',
-        status: 'APPROVED',
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: '2',
-        fullName: 'John Doe',
-        email: 'john@example.com',
-        role: 'USER',
-        walletAddress: '0x5678...efgh',
-        status: 'APPROVED',
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: '3',
-        fullName: 'Jane Smith',
-        email: 'jane@example.com',
-        role: 'USER',
-        walletAddress: '0x9012...ijkl',
-        status: 'APPROVED',
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: '4',
-        fullName: 'Robert Brown',
-        email: 'robert@test.com',
-        role: 'USER',
-        walletAddress: '0x3456...mnop',
-        status: 'APPROVED',
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: '5',
-        fullName: 'Emily Davis',
-        email: 'emily@bpm.com',
-        role: 'USER',
-        walletAddress: '0x7890...qrst',
-        status: 'APPROVED',
-        isActive: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-    ];
-    this.dataSource = new MatTableDataSource(users);
+  constructor(private userService: UserService) {}
+
+  ngOnInit() {
+    this.loadUsers();
   }
 
-  ngOnInit() {}
+  loadUsers() {
+    this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        this.dataSource.data = users || [];
+      },
+      error: (err) => console.error('Error loading users', err)
+    });
+  }
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;

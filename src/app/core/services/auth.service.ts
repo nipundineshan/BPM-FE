@@ -66,11 +66,6 @@ export class AuthService {
   }
 
   handleAuth(res: AuthResponse) {
-    console.log('====================================');
-    console.log(res);
-    console.log('====================================');
-    console.log(res.data);
-    console.log('====================================');
     if (res.data.access_token)
       localStorage.setItem('token', res.data.access_token);
     if (res.data.refresh_token)

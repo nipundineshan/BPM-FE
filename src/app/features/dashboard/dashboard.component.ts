@@ -11,6 +11,7 @@ import { PlotService } from '../../core/services/plot.service';
 import { Plot } from '../../core/models';
 import { AppStateService } from '../../core/services/app-state.service';
 import { Web3Service } from '../../core/services/web3.service';
+import { UserService } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -220,20 +221,18 @@ export class DashboardComponent implements OnInit {
   plots = signal<Plot[]>([]);
   isLoading = true;
   
-  activities = [
-    { title: 'NFT Minted', time: '2 hours ago', desc: 'Your plot "North Hill Villa" has been successfully minted.', icon: 'token', type: 'success' },
-    { title: 'Plot Approved', time: 'Yesterday', desc: 'Admin approved your property documentation for "Studio Apt".', icon: 'check_circle', type: 'success' },
-    { title: 'Registration Pending', time: '3 days ago', desc: 'Property "Silicon Valley Office" is awaiting admin verification.', icon: 'hourglass_empty', type: 'warning' }
-  ];
+  activities: any[] = [];
 
   constructor(
     private plotService: PlotService,
+    private userService: UserService,
     public appState: AppStateService,
     public web3Service: Web3Service
   ) {}
 
   ngOnInit() {
     this.loadPlots();
+    this.loadActivities();
   }
 
   loadPlots() {
@@ -243,6 +242,15 @@ export class DashboardComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => this.isLoading = false
+    });
+  }
+
+  loadActivities() {
+    this.userService.getRecentActivities().subscribe({
+      next: (activities) => {
+        this.activities = activities;
+      },
+      error: (err) => console.error('Error loading activities', err)
     });
   }
 

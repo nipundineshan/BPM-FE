@@ -118,16 +118,19 @@ import { AuthService } from '../../../core/services/auth.service';
               <div class="d-flex flex-wrap gap-3">
                 <div
                   class="doc-item p-3 border rounded-3 d-flex align-items-center"
-                  *ngFor="let doc of [1, 2]"
+                  *ngFor="let doc of plot()?.documents"
                 >
                   <mat-icon class="text-primary me-2">description</mat-icon>
                   <div>
-                    <div class="small fw-bold">Property_Deed_{{ doc }}.pdf</div>
-                    <div class="tiny text-muted">2.4 MB • PDF</div>
+                    <div class="small fw-bold text-truncate" style="max-width: 150px;">{{ doc.split('/').pop() }}</div>
+                    <div class="tiny text-muted">Document Attachment</div>
                   </div>
-                  <button mat-icon-button color="primary" class="ms-3">
+                  <a [href]="doc" target="_blank" mat-icon-button color="primary" class="ms-3">
                     <mat-icon>download</mat-icon>
-                  </button>
+                  </a>
+                </div>
+                <div *ngIf="!plot()?.documents?.length" class="text-muted small">
+                   No documents attached to this property.
                 </div>
               </div>
             </mat-card-content>

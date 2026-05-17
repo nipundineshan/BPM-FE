@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
+import { PlotService } from '../../../core/services/plot.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -127,11 +128,11 @@ import { ChartConfiguration, ChartData } from 'chart.js';
   `]
 })
 export class AdminDashboardComponent implements OnInit {
-  stats = [
-    { label: 'Total Users', value: '1,248', icon: 'people', color: '#3f51b5' },
-    { label: 'Pending Plots', value: '42', icon: 'pending_actions', color: '#ff9800' },
-    { label: 'Approved Plots', value: '385', icon: 'check_circle', color: '#4caf50' },
-    { label: 'Minted NFTs', value: '312', icon: 'token', color: '#e91e63' }
+  stats: any[] = [
+    { label: 'Total Users', value: '0', icon: 'people', color: '#3f51b5' },
+    { label: 'Pending Plots', value: '0', icon: 'pending_actions', color: '#ff9800' },
+    { label: 'Approved Plots', value: '0', icon: 'check_circle', color: '#4caf50' },
+    { label: 'Minted NFTs', value: '0', icon: 'token', color: '#e91e63' }
   ];
 
   // Bar Chart
@@ -141,10 +142,10 @@ export class AdminDashboardComponent implements OnInit {
     plugins: { legend: { display: true } }
   };
   public barChartData: ChartData<'bar'> = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    labels: [],
     datasets: [
-      { data: [65, 59, 80, 81, 56, 55], label: 'Submitted' },
-      { data: [28, 48, 40, 19, 86, 27], label: 'Approved' }
+      { data: [], label: 'Submitted' },
+      { data: [], label: 'Approved' }
     ]
   };
 
@@ -159,14 +160,52 @@ export class AdminDashboardComponent implements OnInit {
     }
   };
   public pieChartData: ChartData<'pie', number[], string | string[]> = {
-    labels: ['Residential', 'Commercial', 'Industrial', 'Land'],
+    labels: [],
     datasets: [{
-      data: [300, 500, 100, 200],
+      data: [],
       backgroundColor: ['#3f51b5', '#ff4081', '#4caf50', '#ffeb3b']
     }]
   };
 
-  constructor() {}
+  constructor(private plotService: PlotService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadStats();
+  }
+
+  loadStats() {
+    this.plotService.getStats().subscribe({
+      next: (data) => {
+        if (data.overview) {
+          this.stats = [
+            { label: 'Total Users', value: data.overview.totalUsers, icon: 'people', color: '#3f51b5' },
+            { label: 'Pending Plots', value: data.overview.pendingPlots, icon: 'pending_actions', color: '#ff9800' },
+            { label: 'Approved Plots', value: data.overview.approvedPlots, icon: 'check_circle', color: '#4caf50' },
+            { label: 'Minted NFTs', value: data.overview.mintedNfts, icon: 'token', color: '#e91e63' }
+          ];
+        }
+        
+        if (data.chartData) {
+          this.barChartData = {
+            labels: data.chartData.labels,
+            datasets: [
+              { data: data.chartData.submitted, label: 'Submitted' },
+              { data: data.chartData.approved, label: 'Approved' }
+            ]
+          };
+        }
+
+        if (data.distribution) {
+          this.pieChartData = {
+            labels: data.distribution.labels,
+            datasets: [{
+              data: data.distribution.values,
+              backgroundColor: ['#3f51b5', '#ff4081', '#4caf50', '#ffeb3b']
+            }]
+          };
+        }
+      },
+      error: (err) => console.error('Error fetching admin stats', err)
+    });
+  }
 }
