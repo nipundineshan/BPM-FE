@@ -29,10 +29,10 @@ export interface AuthResponse {
 }
 
 export type PlotStatus =
-  | 'PENDING_APPROVAL'
-  | 'APPROVED'
-  | 'REJECTED'
-  | 'MINTED';
+  | 'pending_approval'
+  | 'approved'
+  | 'rejected'
+  | 'minted';
 
 export interface Plot {
   id: string;

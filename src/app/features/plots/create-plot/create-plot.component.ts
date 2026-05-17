@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -39,7 +39,7 @@ import { PlotService } from '../../../core/services/plot.service';
       <div class="d-flex align-items-center mb-5">
         <button
           mat-icon-button
-          routerLink="/user/dashboard"
+          (click)="goBack()"
           class="me-3 bg-white shadow-sm"
         >
           <mat-icon>arrow_back</mat-icon>
@@ -47,11 +47,11 @@ import { PlotService } from '../../../core/services/plot.service';
 
         <div>
           <h1 class="mb-0 fw-bold display-6">
-            Register New Property
+            {{ isEditMode ? 'Update Property' : 'Register New Property' }}
           </h1>
 
           <p class="text-muted mb-0">
-            Submit property details for verification and NFT minting.
+            {{ isEditMode ? 'Modify your property details and resubmit for verification.' : 'Submit property details for verification and NFT minting.' }}
           </p>
         </div>
       </div>
@@ -263,7 +263,7 @@ import { PlotService } from '../../../core/services/plot.service';
                 </div>
 
                 <mat-form-field appearance="outline" class="w-100 mb-4">
-                  <mat-label>Market Value</mat-label>
+                  <mat-label>Market Value (INR)</mat-label>
 
                   <input
                     matInput
@@ -272,7 +272,7 @@ import { PlotService } from '../../../core/services/plot.service';
                     placeholder="5000000"
                   />
 
-                  <mat-icon matPrefix>attach_money</mat-icon>
+                  <mat-icon matPrefix>currency_rupee</mat-icon>
                 </mat-form-field>
 
                 <!-- FILES -->
@@ -280,7 +280,7 @@ import { PlotService } from '../../../core/services/plot.service';
                   <div class="step-badge me-3">4</div>
 
                   <h5 class="mb-0 fw-bold text-primary">
-                    Upload Documents
+                    Upload Documents {{ isEditMode ? '(Optional if already uploaded)' : '' }}
                   </h5>
                 </div>
 
@@ -338,7 +338,7 @@ import { PlotService } from '../../../core/services/plot.service';
                     [disabled]="plotForm.invalid || isLoading"
                     class="py-3 rounded-3"
                   >
-                    Submit Property
+                    {{ isEditMode ? 'Update and Resubmit' : 'Submit Property' }}
                   </button>
                 </div>
 
@@ -405,14 +405,17 @@ import { PlotService } from '../../../core/services/plot.service';
     }
   `]
 })
-export class CreatePlotComponent {
+export class CreatePlotComponent implements OnInit {
 
   private fb = inject(FormBuilder);
   private plotService = inject(PlotService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private snackBar = inject(MatSnackBar);
 
   isLoading = false;
+  isEditMode = false;
+  plotId: string | null = null;
 
   propertyImages: File[] = [];
   legalDocuments: File[] = [];
@@ -434,6 +437,49 @@ export class CreatePlotComponent {
     areaSize: ['', Validators.required],
     marketValue: [null, Validators.required]
   });
+
+  ngOnInit(): void {
+    this.plotId = this.route.snapshot.queryParamMap.get('id');
+    if (this.plotId) {
+      this.isEditMode = true;
+      this.loadPlotData(this.plotId);
+    }
+  }
+
+  loadPlotData(id: string): void {
+    this.isLoading = true;
+    this.plotService.getPlotById(id).subscribe({
+      next: (plot) => {
+        this.plotForm.patchValue({
+          registrationNumber: plot.registrationNumber,
+          surveyNumber: plot.surveyNumber,
+          plotName: plot.plotName,
+          description: plot.description,
+          address: plot.address,
+          district: plot.district,
+          state: plot.state,
+          country: plot.country,
+          latitude: plot.latitude,
+          longitude: plot.longitude,
+          areaSize: plot.areaSize,
+          marketValue: plot.marketValue
+        });
+        this.isLoading = false;
+      },
+      error: () => {
+        this.snackBar.open('Failed to load property data', 'Close', { duration: 3000 });
+        this.isLoading = false;
+      }
+    });
+  }
+
+  goBack(): void {
+    if (this.isEditMode) {
+      this.router.navigate(['/user/plot-details', this.plotId]);
+    } else {
+      this.router.navigate(['/user/dashboard']);
+    }
+  }
 
   onPropertyImagesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -474,15 +520,19 @@ export class CreatePlotComponent {
       formData.append('legalDocuments', file);
     });
 
-    this.plotService.createPlot(formData).subscribe({
+    const request = this.isEditMode && this.plotId
+      ? this.plotService.updatePlot(this.plotId, formData)
+      : this.plotService.createPlot(formData);
+
+    request.subscribe({
       next: () => {
         this.snackBar.open(
-          'Property submitted successfully!',
+          this.isEditMode ? 'Property updated and resubmitted successfully!' : 'Property submitted successfully!',
           'Close',
           { duration: 3000 }
         );
 
-        this.router.navigate(['/user/dashboard']);
+        this.router.navigate(['/user/my-plots']);
       },
 
       error: (err) => {

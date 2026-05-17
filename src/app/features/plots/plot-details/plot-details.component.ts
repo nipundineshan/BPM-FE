@@ -52,7 +52,7 @@ import { AuthService } from '../../../core/services/auth.service';
         </div>
       </div>
 
-      <div class="row g-4 px-3">
+      <div class="row g-4">
         <!-- Left Column: Image and Description -->
         <div class="col-lg-8">
           <mat-card class="shadow-sm border-0 mb-4 overflow-hidden dark:bg-slate-900 dark:border dark:border-slate-800">
@@ -81,7 +81,7 @@ import { AuthService } from '../../../core/services/auth.service';
                       Market Value
                     </div>
                     <div class="fs-4 fw-bold text-primary-500">
-                      {{ plot()?.marketValue | currency }}
+                      ₹ {{ plot()?.marketValue | number:'1.0-0' }}
                     </div>
                   </div>
                 </div>
@@ -106,6 +106,17 @@ import { AuthService } from '../../../core/services/auth.service';
                   </div>
                 </div>
               </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Rejection Reason -->
+          <mat-card *ngIf="plot()?.status === 'rejected' && plot()?.rejectionReason" class="shadow-sm border-0 mb-4 border-start border-danger border-4 dark:bg-slate-900">
+            <mat-card-content class="p-4">
+              <div class="d-flex align-items-center mb-2">
+                <mat-icon class="text-danger me-2">report_problem</mat-icon>
+                <h6 class="fw-bold mb-0 text-danger">Rejection Reason</h6>
+              </div>
+              <p class="text-slate-600 dark:text-slate-400 mb-0">{{ plot()?.rejectionReason }}</p>
             </mat-card-content>
           </mat-card>
 
@@ -142,7 +153,7 @@ import { AuthService } from '../../../core/services/auth.service';
           <!-- Admin/Verification Card -->
           <mat-card
             class="shadow-sm border-0 mb-4 dark:bg-slate-900 dark:border dark:border-slate-800"
-            [class.border-top-primary]="plot()?.status === 'PENDING_APPROVAL'"
+            [class.border-top-primary]="plot()?.status === 'pending_approval'"
           >
             <mat-card-header class="bg-slate-50 dark:bg-slate-800/50 p-3 border-bottom dark:border-slate-800">
               <mat-card-title class="m-0 fs-6 fw-bold text-slate-900 dark:text-white"
@@ -152,7 +163,7 @@ import { AuthService } from '../../../core/services/auth.service';
             <mat-card-content class="p-4">
               <!-- Pending State -->
               <div
-                *ngIf="plot()?.status === 'PENDING_APPROVAL'"
+                *ngIf="plot()?.status === 'pending_approval'"
                 class="text-center"
               >
                 <mat-icon class="display-4 text-warning-500 mb-3"
@@ -187,8 +198,22 @@ import { AuthService } from '../../../core/services/auth.service';
                 </div>
               </div>
 
+              <!-- Rejected State -->
+              <div *ngIf="plot()?.status === 'rejected'" class="text-center">
+                <mat-icon class="display-4 text-danger mb-3">cancel</mat-icon>
+                <h5 class="text-slate-900 dark:text-white">Submission Rejected</h5>
+                <p class="small text-slate-500">
+                  This submission was rejected by the administrator. Please update the details and resubmit.
+                </p>
+                <div *ngIf="plot()?.ownerId === authService.currentUser()?.id" class="d-grid mt-4">
+                  <button mat-raised-button color="primary" (click)="editPlot()" class="rounded-pill">
+                    <mat-icon class="me-1">edit</mat-icon> Edit and Resubmit
+                  </button>
+                </div>
+              </div>
+
               <!-- Approved State -->
-              <div *ngIf="plot()?.status === 'APPROVED'" class="text-center">
+              <div *ngIf="plot()?.status === 'approved'" class="text-center">
                 <mat-icon class="display-4 text-success-500 mb-3"
                   >verified</mat-icon
                 >
@@ -229,7 +254,7 @@ import { AuthService } from '../../../core/services/auth.service';
               </div>
 
               <!-- Minted State -->
-              <div *ngIf="plot()?.status === 'MINTED'" class="text-center">
+              <div *ngIf="plot()?.status === 'minted'" class="text-center">
                 <mat-icon class="display-4 text-primary-500 mb-3">token</mat-icon>
                 <h5 class="text-primary-500 fw-bold">NFT Minted</h5>
                 <mat-divider class="my-3 dark:border-slate-800"></mat-divider>
@@ -319,19 +344,19 @@ import { AuthService } from '../../../core/services/auth.service';
         width: 48px;
         height: 48px;
       }
-      .status-PENDING_APPROVAL {
+      .status-pending_approval {
         background: rgba(245, 158, 11, 0.1);
         color: #f59e0b;
       }
-      .status-APPROVED {
+      .status-approved {
         background: rgba(16, 185, 129, 0.1);
         color: #10b981;
       }
-      .status-MINTED {
+      .status-minted {
         background: rgba(99, 102, 241, 0.1);
         color: #6366f1;
       }
-      .status-REJECTED {
+      .status-rejected {
         background: rgba(239, 68, 68, 0.1);
         color: #ef4444;
       }
@@ -387,6 +412,12 @@ export class PlotDetailsComponent implements OnInit {
     }
   }
 
+  editPlot() {
+    if (this.plot()) {
+      this.router.navigate(['/user/register-plot'], { queryParams: { id: this.plot()?.id } });
+    }
+  }
+
   uploadToIpfs() {
     const p = this.plot();
     if (!p) return;
@@ -396,7 +427,7 @@ export class PlotDetailsComponent implements OnInit {
     });
     this.plotService.uploadToIpfs(p.id).subscribe({
       next: (res) => {
-        this.plot.set({ ...p, status: 'APPROVED', ipfsHash: res.ipfsHash });
+        this.plot.set({ ...p, status: 'approved', ipfsHash: res.ipfsHash });
         this.snackBar.open('Plot approved and metadata uploaded!', 'Success', {
           duration: 3000,
         });
@@ -412,7 +443,7 @@ export class PlotDetailsComponent implements OnInit {
       this.plotService.rejectPlot(this.plot()!.id, reason).subscribe({
         next: () => {
           this.snackBar.open('Plot rejected.', 'Close', { duration: 3000 });
-          this.plot.update((p) => (p ? { ...p, status: 'REJECTED' } : null));
+          this.plot.update((p) => (p ? { ...p, status: 'rejected', rejectionReason: reason } : null));
         },
         error: () => this.snackBar.open('Rejection failed', 'Close', { duration: 3000 })
       });
@@ -432,7 +463,7 @@ export class PlotDetailsComponent implements OnInit {
       next: (res) => {
         this.plot.set({
           ...p,
-          status: 'MINTED',
+          status: 'minted',
           isMinted: true,
           tokenId: res.tokenId,
           transactionHash: res.transactionHash,

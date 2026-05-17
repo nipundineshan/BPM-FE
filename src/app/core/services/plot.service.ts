@@ -45,6 +45,14 @@ export class PlotService {
     );
   }
 
+  updatePlot(id: string, formData: FormData): Observable<Plot> {
+    this.appState.setLoading(true);
+    return this.http.patch<any>(`${this.apiUrl}/${id}`, formData).pipe(
+      map(res => res.data || res),
+      tap(() => this.appState.setLoading(false))
+    );
+  }
+
   approvePlot(id: string): Observable<Plot> {
     return this.http.patch<any>(`${this.apiUrl}/${id}/approve`, {}).pipe(
       map(res => res.data || res)

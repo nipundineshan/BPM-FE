@@ -52,9 +52,10 @@ import { Plot } from '../../../core/models';
           <div class="v-divider"></div>
           <mat-chip-set class="status-filters">
             <mat-chip-option [selected]="currentFilter === 'ALL'" (click)="filterStatus('ALL')">All</mat-chip-option>
-            <mat-chip-option [selected]="currentFilter === 'PENDING_APPROVAL'" (click)="filterStatus('PENDING_APPROVAL')">Pending</mat-chip-option>
-            <mat-chip-option [selected]="currentFilter === 'APPROVED'" (click)="filterStatus('APPROVED')">Verified</mat-chip-option>
-            <mat-chip-option [selected]="currentFilter === 'MINTED'" (click)="filterStatus('MINTED')">Minted</mat-chip-option>
+            <mat-chip-option [selected]="currentFilter === 'pending_approval'" (click)="filterStatus('pending_approval')">Pending</mat-chip-option>
+            <mat-chip-option [selected]="currentFilter === 'approved'" (click)="filterStatus('approved')">Verified</mat-chip-option>
+            <mat-chip-option [selected]="currentFilter === 'minted'" (click)="filterStatus('minted')">Minted</mat-chip-option>
+            <mat-chip-option [selected]="currentFilter === 'rejected'" (click)="filterStatus('rejected')">Rejected</mat-chip-option>
           </mat-chip-set>
         </div>
         
@@ -88,7 +89,7 @@ import { Plot } from '../../../core/models';
               <div class="asset-details-grid mt-auto pt-3 border-top dark:border-slate-800">
                 <div class="d-flex justify-content-between mb-2">
                   <span class="tiny text-slate-400 fw-bold">MARKET VALUE</span>
-                  <span class="small fw-bold text-indigo">{{plot.marketValue | currency:'USD':'symbol':'1.0-0'}}</span>
+                  <span class="small fw-bold text-indigo">₹ {{plot.marketValue | number:'1.0-0'}}</span>
                 </div>
                 <div class="d-flex justify-content-between">
                   <span class="tiny text-slate-400 fw-bold">TOTAL AREA</span>
@@ -100,7 +101,7 @@ import { Plot } from '../../../core/models';
             <mat-card-footer class="px-4 py-3 bg-slate-50 dark:bg-slate-800/50 d-flex justify-content-between align-items-center">
               <span class="tiny text-slate-400 fw-bold">REF: #{{plot.id.substring(0,8)}}</span>
               <div class="d-flex gap-2">
-                 <mat-icon *ngIf="plot.status === 'MINTED'" class="text-success small-icon" matTooltip="Secured on Blockchain">verified</mat-icon>
+                 <mat-icon *ngIf="plot.status === 'minted'" class="text-success small-icon" matTooltip="Secured on Blockchain">verified</mat-icon>
                  <mat-icon class="text-slate-300 small-icon">arrow_forward</mat-icon>
               </div>
             </mat-card-footer>
@@ -216,10 +217,10 @@ export class PlotListComponent implements OnInit {
 
   getStatusClass(status: string) {
     switch (status) {
-      case 'MINTED': return 'text-indigo';
-      case 'APPROVED': return 'text-success';
-      case 'PENDING_APPROVAL': return 'text-warning';
-      case 'REJECTED': return 'text-danger';
+      case 'minted': return 'text-indigo';
+      case 'approved': return 'text-success';
+      case 'pending_approval': return 'text-warning';
+      case 'rejected': return 'text-danger';
       default: return 'text-secondary';
     }
   }

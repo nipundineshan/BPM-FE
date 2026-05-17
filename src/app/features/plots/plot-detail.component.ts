@@ -96,7 +96,7 @@ import { interval, Subscription, switchMap, takeWhile } from 'rxjs';
           <!-- Price Card -->
           <div class="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
             <span class="text-sm text-slate-500 font-medium">Market Value</span>
-            <div class="text-3xl font-bold text-primary-600 mt-1">{{ plot.marketValue | currency:'USD':'symbol':'1.0-0' }}</div>
+            <div class="text-3xl font-bold text-primary-600 mt-1">₹ {{ plot.marketValue | number:'1.0-0' }}</div>
           </div>
 
           <!-- Tokenization Status Card -->
@@ -194,7 +194,7 @@ export class PlotDetailComponent implements OnInit, OnDestroy {
     this.plotService.getPlotById(id).subscribe({
       next: (data) => {
         this.plot.set(data);
-        if (data.status === 'MINTED' && !data.tokenId) {
+        if (data.status === 'minted' && !data.tokenId) {
           this.startPolling(id);
         }
       }
