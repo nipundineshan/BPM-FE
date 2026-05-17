@@ -33,7 +33,7 @@ import { UserService } from '../../core/services/user.service';
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-end mb-5">
         <div>
-          <h1 class="h2 fw-bold tracking-tight mb-1">Portfolio Insights</h1>
+          <h1 class="h2 fw-bold tracking-tight mb-1 text-slate-900 dark:text-white">Portfolio Insights</h1>
           <p class="text-slate-500 mb-0">Overview of your tokenized property assets and blockchain activities.</p>
         </div>
         <button mat-flat-button color="primary" routerLink="/user/register-plot" class="rounded-pill px-4 shadow-sm">
@@ -44,7 +44,7 @@ import { UserService } from '../../core/services/user.service';
       <!-- Stats Grid -->
       <div class="row g-4 mb-5">
         <div class="col-md-4" *ngFor="let stat of getStats()">
-          <mat-card class="stat-card-new border-0 h-100">
+          <mat-card class="stat-card-new border-0 h-100 dark:bg-slate-900 dark:border dark:border-slate-800">
             <mat-card-content class="p-4">
               <div class="d-flex align-items-start justify-content-between mb-3">
                 <div class="stat-icon-box" [style.background-color]="stat.color + '15'" [style.color]="stat.color">
@@ -55,7 +55,7 @@ import { UserService } from '../../core/services/user.service';
                   <span>{{stat.trend}}%</span>
                 </div>
               </div>
-              <div class="stat-value fs-1 fw-bold tracking-tight mb-1">{{stat.value}}</div>
+              <div class="stat-value fs-1 fw-bold tracking-tight mb-1 text-slate-900 dark:text-white">{{stat.value}}</div>
               <div class="text-slate-500 small fw-medium uppercase letter-spacing-1">{{stat.label}}</div>
             </mat-card-content>
           </mat-card>
@@ -66,7 +66,7 @@ import { UserService } from '../../core/services/user.service';
         <!-- Main Content: Recent Plots -->
         <div class="col-lg-8">
           <div class="section-header d-flex justify-content-between align-items-center mb-4">
-            <h3 class="h5 fw-bold mb-0">Recent Submissions</h3>
+            <h3 class="h5 fw-bold mb-0 text-slate-900 dark:text-white">Recent Submissions</h3>
             <button mat-button color="primary" routerLink="/user/my-plots" class="fw-semibold">
               View Portfolio <mat-icon class="ms-1 tiny-icon">arrow_forward</mat-icon>
             </button>
@@ -76,33 +76,33 @@ import { UserService } from '../../core/services/user.service';
             <mat-progress-bar mode="indeterminate" class="rounded-pill"></mat-progress-bar>
           </div>
           
-          <div *ngIf="!isLoading && plots().length === 0" class="empty-state-box">
+          <div *ngIf="!isLoading && plots().length === 0" class="empty-state-box dark:bg-slate-900 dark:border-slate-800">
             <div class="empty-icon-wrapper">
               <mat-icon>add_location_alt</mat-icon>
             </div>
-            <h4 class="fw-bold h5">No assets found</h4>
+            <h4 class="fw-bold h5 text-slate-900 dark:text-white">No assets found</h4>
             <p class="text-slate-500">You haven't registered any property plots yet.</p>
             <button mat-stroked-button color="primary" routerLink="/user/register-plot" class="rounded-pill px-4">Get Started</button>
           </div>
 
           <div class="row g-4" *ngIf="!isLoading">
             <div class="col-md-6" *ngFor="let plot of plots().slice(0, 4)">
-              <mat-card class="asset-card shadow-sm border-0 h-100 overflow-hidden" [routerLink]="['/user/plot-details', plot.id]">
+              <mat-card class="asset-card shadow-sm border-0 h-100 overflow-hidden dark:bg-slate-900 dark:border dark:border-slate-800" [routerLink]="['/user/plot-details', plot.id]">
                 <div class="asset-img-container">
-                  <img [src]="plot.imageUrl || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'" class="asset-img">
-                  <div class="asset-status-chip" [ngClass]="'status-' + plot.status">
+                  <img [src]="plot.propertyImages[0] || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'" class="asset-img">
+                  <div class="asset-status-chip dark:bg-slate-800 dark:text-white dark:border-slate-700" [ngClass]="'status-' + plot.status">
                     {{plot.status.replace('_', ' ')}}
                   </div>
                 </div>
                 <mat-card-content class="p-4">
-                  <h4 class="h6 fw-bold mb-1 text-truncate">{{plot.title}}</h4>
+                  <h4 class="h6 fw-bold mb-1 text-truncate text-slate-900 dark:text-white">{{plot.plotName}}</h4>
                   <div class="d-flex align-items-center text-slate-500 small mb-3">
                     <mat-icon class="tiny-icon me-1">location_on</mat-icon> 
-                    <span class="text-truncate">{{plot.location}}</span>
+                    <span class="text-truncate">{{plot.address}}</span>
                   </div>
-                  <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                    <span class="fs-5 fw-bold text-indigo">{{plot.price | currency:'USD':'symbol':'1.0-0'}}</span>
-                    <span class="text-slate-400 small">{{plot.areaSize}} sqft</span>
+                  <div class="d-flex justify-content-between align-items-center pt-3 border-top dark:border-slate-800">
+                    <span class="fs-5 fw-bold text-indigo">{{plot.marketValue | currency:'USD':'symbol':'1.0-0'}}</span>
+                    <span class="text-slate-400 small">{{plot.areaSize}}</span>
                   </div>
                 </mat-card-content>
               </mat-card>
@@ -113,11 +113,11 @@ import { UserService } from '../../core/services/user.service';
         <!-- Sidebar: Wallet & Activity -->
         <div class="col-lg-4">
           <!-- Wallet Card -->
-          <mat-card class="wallet-card-new border-0 mb-5 overflow-hidden">
+          <mat-card class="wallet-card-new border-0 mb-5 overflow-hidden dark:bg-slate-900 dark:border dark:border-slate-800">
              <div class="wallet-accent"></div>
              <mat-card-content class="p-4">
                 <div class="d-flex align-items-center justify-content-between mb-4">
-                  <h3 class="h6 fw-bold mb-0">Blockchain Status</h3>
+                  <h3 class="h6 fw-bold mb-0 text-slate-900 dark:text-white">Blockchain Status</h3>
                   <div class="status-indicator" [class.active]="web3Service.walletAddress()"></div>
                 </div>
                 
@@ -128,10 +128,10 @@ import { UserService } from '../../core/services/user.service';
                     </div>
                     <div>
                       <div class="text-slate-500 tiny fw-bold uppercase">MetaMask Connected</div>
-                      <div class="fw-mono small text-truncate" style="max-width: 180px;">{{web3Service.walletAddress()}}</div>
+                      <div class="fw-mono small text-truncate text-slate-900 dark:text-slate-300" style="max-width: 180px;">{{web3Service.walletAddress()}}</div>
                     </div>
                   </div>
-                  <div class="network-pill">
+                  <div class="network-pill dark:bg-slate-800 dark:text-slate-300">
                     <span class="dot"></span> Ethereum Sepolia
                   </div>
                 </div>
@@ -149,14 +149,14 @@ import { UserService } from '../../core/services/user.service';
 
           <!-- Activity Timeline -->
           <div class="section-header mb-4">
-            <h3 class="h6 fw-bold mb-0">Recent Activity</h3>
+            <h3 class="h6 fw-bold mb-0 text-slate-900 dark:text-white">Recent Activity</h3>
           </div>
           
-          <mat-card class="timeline-card-new border-0">
+          <mat-card class="timeline-card-new border-0 dark:bg-slate-900 dark:border dark:border-slate-800">
             <mat-card-content class="p-0">
               <div class="timeline-v2">
                 <div class="timeline-v2-item" *ngFor="let activity of activities">
-                  <div class="timeline-v2-icon" [ngClass]="activity.type">
+                  <div class="timeline-v2-icon dark:bg-slate-800 dark:border-slate-700" [ngClass]="activity.type">
                     <mat-icon>{{activity.icon}}</mat-icon>
                   </div>
                   <div class="timeline-v2-content">
@@ -174,7 +174,7 @@ import { UserService } from '../../core/services/user.service';
                 </div>
               </div>
             </mat-card-content>
-            <mat-card-actions class="p-3 border-top justify-content-center" *ngIf="activities.length > 0">
+            <mat-card-actions class="p-3 border-top dark:border-slate-800 justify-content-center" *ngIf="activities.length > 0">
               <button mat-button class="tiny fw-bold text-slate-500">VIEW FULL HISTORY</button>
             </mat-card-actions>
           </mat-card>
@@ -372,7 +372,7 @@ export class DashboardComponent implements OnInit {
   loadPlots() {
     this.plotService.getMyPlots().subscribe({
       next: (plots) => {
-        this.plots.set(plots);
+        this.plots.set(plots || []);
         this.isLoading = false;
       },
       error: () => this.isLoading = false

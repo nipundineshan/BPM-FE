@@ -36,16 +36,20 @@ export type PlotStatus =
 
 export interface Plot {
   id: string;
-  title: string;
+  plotName: string;
   description: string;
-  location: string;
-  district: string;
+  surveyNumber: string;
+  areaSize: string;
   latitude: number;
   longitude: number;
-  price: number;
-  areaSize: number;
-  imageUrl: string;
-  documents?: string[];
+  address: string;
+  district: string;
+  state: string;
+  country: string;
+  marketValue: number;
+  registrationNumber: string;
+  propertyImages: string[];
+  legalDocuments: string[];
   status: PlotStatus;
   rejectionReason?: string;
   ipfsHash?: string;

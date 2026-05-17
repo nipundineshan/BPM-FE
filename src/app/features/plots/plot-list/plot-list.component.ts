@@ -34,7 +34,7 @@ import { Plot } from '../../../core/models';
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-end mb-5">
         <div>
-          <h1 class="h2 fw-bold tracking-tight mb-1">Property Portfolio</h1>
+          <h1 class="h2 fw-bold tracking-tight mb-1 text-slate-900 dark:text-white">Property Portfolio</h1>
           <p class="text-slate-500 mb-0">Manage and track your tokenized real estate assets.</p>
         </div>
         <button mat-flat-button color="primary" routerLink="/user/register-plot" class="rounded-pill px-4 shadow-sm">
@@ -43,11 +43,11 @@ import { Plot } from '../../../core/models';
       </div>
 
       <!-- Filters & Search -->
-      <div class="filter-bar p-3 bg-white rounded-4 shadow-sm border mb-5 d-flex flex-wrap align-items-center justify-content-between gap-3">
+      <div class="filter-bar p-3 bg-white dark:bg-slate-900 rounded-4 shadow-sm border dark:border-slate-800 mb-5 d-flex flex-wrap align-items-center justify-content-between gap-3">
         <div class="d-flex align-items-center gap-3 flex-grow-1" style="max-width: 600px;">
           <div class="search-box flex-grow-1">
             <mat-icon class="search-icon">search</mat-icon>
-            <input type="text" placeholder="Search by title or location..." (keyup)="onSearch($event)" class="search-input">
+            <input type="text" placeholder="Search by name or address..." (keyup)="onSearch($event)" class="search-input">
           </div>
           <div class="v-divider"></div>
           <mat-chip-set class="status-filters">
@@ -69,9 +69,9 @@ import { Plot } from '../../../core/models';
       <!-- Asset Grid -->
       <div class="row g-4">
         <div class="col-xl-3 col-lg-4 col-md-6" *ngFor="let plot of filteredPlots()">
-          <mat-card class="premium-asset-card border-0 shadow-sm h-100 overflow-hidden" [routerLink]="['/user/plot-details', plot.id]">
+          <mat-card class="premium-asset-card border-0 shadow-sm h-100 overflow-hidden dark:bg-slate-900 dark:border dark:border-slate-800" [routerLink]="['/user/plot-details', plot.id]">
             <div class="asset-visual">
-              <img [src]="plot.imageUrl || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'" class="asset-thumb">
+              <img [src]="plot.propertyImages[0] || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'" class="asset-thumb">
               <div class="asset-overlay">
                 <span class="badge" [ngClass]="getStatusClass(plot.status)">
                   {{plot.status.replace('_', ' ')}}
@@ -80,24 +80,24 @@ import { Plot } from '../../../core/models';
             </div>
             
             <mat-card-content class="p-4 d-flex flex-column">
-              <h3 class="h6 fw-bold mb-1 text-truncate tracking-tight" [title]="plot.title">{{plot.title}}</h3>
+              <h3 class="h6 fw-bold mb-1 text-truncate tracking-tight text-slate-900 dark:text-white" [title]="plot.plotName">{{plot.plotName}}</h3>
               <div class="d-flex align-items-center text-slate-400 tiny fw-semibold mb-4">
-                <mat-icon class="tiny-icon me-1">location_on</mat-icon> {{plot.location}}
+                <mat-icon class="tiny-icon me-1">location_on</mat-icon> {{plot.address}}
               </div>
               
-              <div class="asset-details-grid mt-auto pt-3 border-top">
+              <div class="asset-details-grid mt-auto pt-3 border-top dark:border-slate-800">
                 <div class="d-flex justify-content-between mb-2">
                   <span class="tiny text-slate-400 fw-bold">MARKET VALUE</span>
-                  <span class="small fw-bold text-indigo">{{plot.price | currency:'USD':'symbol':'1.0-0'}}</span>
+                  <span class="small fw-bold text-indigo">{{plot.marketValue | currency:'USD':'symbol':'1.0-0'}}</span>
                 </div>
                 <div class="d-flex justify-content-between">
                   <span class="tiny text-slate-400 fw-bold">TOTAL AREA</span>
-                  <span class="small fw-semibold text-slate-600">{{plot.areaSize}} sqft</span>
+                  <span class="small fw-semibold text-slate-600 dark:text-slate-300">{{plot.areaSize}}</span>
                 </div>
               </div>
             </mat-card-content>
             
-            <mat-card-footer class="px-4 py-3 bg-slate-50 d-flex justify-content-between align-items-center">
+            <mat-card-footer class="px-4 py-3 bg-slate-50 dark:bg-slate-800/50 d-flex justify-content-between align-items-center">
               <span class="tiny text-slate-400 fw-bold">REF: #{{plot.id.substring(0,8)}}</span>
               <div class="d-flex gap-2">
                  <mat-icon *ngIf="plot.status === 'MINTED'" class="text-success small-icon" matTooltip="Secured on Blockchain">verified</mat-icon>
@@ -111,9 +111,9 @@ import { Plot } from '../../../core/models';
       <!-- Empty State -->
       <div *ngIf="!isLoading && filteredPlots().length === 0" class="empty-portfolio text-center">
         <div class="empty-illustration mb-4">
-          <mat-icon class="display-1 text-slate-100">holiday_village</mat-icon>
+          <mat-icon class="display-1 text-slate-100 dark:text-slate-800">holiday_village</mat-icon>
         </div>
-        <h4 class="fw-bold tracking-tight">No properties found</h4>
+        <h4 class="fw-bold tracking-tight text-slate-900 dark:text-white">No properties found</h4>
         <p class="text-slate-500">We couldn't find any assets matching your current filters.</p>
         <button mat-stroked-button color="primary" class="rounded-pill mt-2 px-4" (click)="filterStatus('ALL')">Reset All Filters</button>
       </div>
@@ -156,7 +156,7 @@ import { Plot } from '../../../core/models';
       box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid rgba(0,0,0,0.05);
     }
 
-    .bg-slate-50 { background-color: #f8fafc; }
+    .bg-slate-50 { background-color: var(--bg-app); }
     
     /* Empty State */
     .empty-portfolio { padding: 8rem 2rem; }
@@ -206,8 +206,8 @@ export class PlotListComponent implements OnInit {
     
     if (searchValue) {
       results = results.filter(p => 
-        p.title.toLowerCase().includes(searchValue) || 
-        p.location.toLowerCase().includes(searchValue)
+        p.plotName.toLowerCase().includes(searchValue) || 
+        p.address.toLowerCase().includes(searchValue)
       );
     }
     

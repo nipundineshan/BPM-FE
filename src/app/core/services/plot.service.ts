@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, map } from 'rxjs';
-import { Plot, PlotStatus } from '../models';
+import { Plot } from '../models';
 import { environment } from '../../../environments/environment';
 import { AppStateService } from './app-state.service';
 
@@ -37,9 +37,9 @@ export class PlotService {
     );
   }
 
-  createPlot(plotData: any): Observable<Plot> {
+  createPlot(formData: FormData): Observable<Plot> {
     this.appState.setLoading(true);
-    return this.http.post<any>(this.apiUrl, plotData).pipe(
+    return this.http.post<any>(this.apiUrl, formData).pipe(
       map(res => res.data || res),
       tap(() => this.appState.setLoading(false))
     );
