@@ -6,15 +6,15 @@ import { Web3Service } from './web3.service';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NftService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/nft`;
+  private apiUrl = `${environment.apiUrl}/nfts`;
 
   mintNft(plotId: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/mint/${plotId}`, {}).pipe(
-      map(res => res.data || res)
-    );
+    return this.http
+      .post<any>(`${this.apiUrl}/mint/${plotId}`, {})
+      .pipe(map((res) => res.data || res));
   }
 }
