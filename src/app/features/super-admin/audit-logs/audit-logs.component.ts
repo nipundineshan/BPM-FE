@@ -83,7 +83,7 @@ export class AuditLogsComponent implements OnInit {
   loadLogs() {
     this.userService.getGlobalAuditLogs().subscribe({
       next: (logs) => this.logs = logs,
-      error: (err) => console.error('Error loading global audit logs', err)
+      error: (err: any) => console.error('Error loading global audit logs', err)
     });
   }
 

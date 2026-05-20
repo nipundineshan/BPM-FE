@@ -272,7 +272,7 @@ export class DashboardComponent implements OnInit {
           };
         }
       },
-      error: (err) => console.error('Error fetching global stats', err)
+      error: (err: any) => console.error('Error fetching global stats', err)
     });
   }
 }

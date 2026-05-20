@@ -535,7 +535,7 @@ export class CreatePlotComponent implements OnInit {
         this.router.navigate(['/user/my-plots']);
       },
 
-      error: (err) => {
+      error: (err: any) => {
         this.snackBar.open(
           err?.error?.message || 'Failed to submit property',
           'Close',

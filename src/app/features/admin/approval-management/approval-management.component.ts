@@ -393,7 +393,7 @@ export class ApprovalManagementComponent implements OnInit {
   loadPlots() {
     this.plotService.getAllPlots().subscribe({
       next: (plots) => (this.plots = plots || []),
-      error: (err) => console.error('Error loading plots', err),
+      error: (err: any) => console.error('Error loading plots', err),
     });
   }
 

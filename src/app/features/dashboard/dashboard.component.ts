@@ -29,531 +29,458 @@ import { UserService } from '../../core/services/user.service';
     MatTooltipModule,
   ],
   template: `
-    <div class="dashboard-wrapper">
-      <!-- Header -->
-      <div class="d-flex justify-content-between align-items-end mb-5">
-        <div>
-          <h1
-            class="h2 fw-bold tracking-tight mb-1 text-slate-900 dark:text-white"
-          >
-            Portfolio Insights
+    <div class="dashboard-shell animate-fade-in">
+      <!-- Top Cyber Bar -->
+      <div class="cyber-header mb-5 d-flex justify-content-between align-items-center">
+        <div class="header-content">
+          <div class="cyber-badge mb-2">SYSTEM: OPERATIONAL</div>
+          <h1 class="display-5 fw-black text-white tracking-tighter mb-0">
+            PORTFOLIO <span class="text-gradient">CORE</span>
           </h1>
-          <p class="text-slate-500 mb-0">
-            Overview of your tokenized property assets and blockchain
-            activities.
-          </p>
+          <div class="d-flex align-items-center gap-2 mt-2 opacity-50">
+            <span class="pulse-dot"></span>
+            <span class="tiny-label uppercase letter-spacing-2">Live Blockchain Sync Active</span>
+          </div>
         </div>
         <button
           mat-flat-button
           color="primary"
           routerLink="/user/register-plot"
-          class="rounded-pill px-4 shadow-sm"
+          class="cyber-button pulse-primary"
         >
-          <mat-icon class="me-1">add_circle</mat-icon> Register Property
+          <mat-icon class="me-2">add_link</mat-icon> 
+          <span class="fw-black tracking-tight">TOKENIZE ASSET</span>
         </button>
       </div>
 
-      <!-- Stats Grid -->
+      <!-- Neo-Stats Grid -->
       <div class="row g-4 mb-5">
-        <div class="col-md-4" *ngFor="let stat of getStats()">
-          <mat-card
-            class="stat-card-new border-0 h-100 dark:bg-slate-900 dark:border dark:border-slate-800"
+        <div class="col-md-4" *ngFor="let stat of getStats(); let i = index">
+          <div 
+            class="neo-card stat-card holographic"
+            [style.animation-delay]="i * 0.1 + 's'"
+            [style.--accent-color]="stat.color"
           >
-            <mat-card-content class="p-4">
-              <div
-                class="d-flex align-items-start justify-content-between mb-3"
-              >
-                <div
-                  class="stat-icon-box"
-                  [style.background-color]="stat.color + '15'"
-                  [style.color]="stat.color"
-                >
-                  <mat-icon>{{ stat.icon }}</mat-icon>
+            <div class="neo-card-inner">
+              <div class="d-flex justify-content-between align-items-start mb-4">
+                <div class="neo-icon-box" [style.background]="stat.color" [style.box-shadow]="'0 0 20px ' + stat.color + '88'">
+                  <mat-icon class="text-white">{{ stat.icon }}</mat-icon>
                 </div>
-                <div
-                  class="trend-badge"
-                  [ngClass]="stat.trend > 0 ? 'trend-up' : 'trend-neutral'"
-                >
-                  <mat-icon>{{
-                    stat.trend > 0 ? 'north_east' : 'remove'
-                  }}</mat-icon>
+                <div class="trend-badge" [class.positive]="stat.trend > 0">
+                  <mat-icon class="tiny-icon">{{ stat.trend > 0 ? 'north_east' : 'horizontal_rule' }}</mat-icon>
                   <span>{{ stat.trend }}%</span>
                 </div>
               </div>
-              <div
-                class="stat-value fs-1 fw-bold tracking-tight mb-1 text-slate-900 dark:text-white"
-              >
-                {{ stat.value }}
-              </div>
-              <div
-                class="text-slate-500 small fw-medium uppercase letter-spacing-1"
-              >
-                {{ stat.label }}
-              </div>
-            </mat-card-content>
-          </mat-card>
+              <div class="neo-stat-value text-glow">{{ stat.value }}</div>
+              <div class="neo-stat-label">{{ stat.label }}</div>
+              <div class="neo-card-glow" [style.background]="'radial-gradient(circle at center, ' + stat.color + '22 0%, transparent 70%)'"></div>
+            </div>
+            <div class="holo-scanline"></div>
+          </div>
         </div>
       </div>
 
       <div class="row g-5">
-        <!-- Main Content: Recent Plots -->
+        <!-- Main Frame: Portfolio -->
         <div class="col-lg-8">
-          <div
-            class="section-header d-flex justify-content-between align-items-center mb-4"
-          >
-            <h3 class="h5 fw-bold mb-0 text-slate-900 dark:text-white">
-              Recent Submissions
-            </h3>
-            <button
-              mat-button
-              color="primary"
-              routerLink="/user/my-plots"
-              class="fw-semibold"
-            >
-              View Portfolio
-              <mat-icon class="ms-1 tiny-icon">arrow_forward</mat-icon>
+          <div class="frame-header d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center gap-3">
+              <div class="frame-icon"><mat-icon>layers</mat-icon></div>
+              <h3 class="h5 fw-black text-white mb-0 uppercase tracking-widest">Digital Portfolio</h3>
+            </div>
+            <button mat-button class="cyber-link" routerLink="/user/my-plots">
+              EXPAND DATA <mat-icon class="ms-1 tiny-icon">arrow_forward</mat-icon>
             </button>
           </div>
 
-          <div *ngIf="isLoading" class="py-5">
-            <mat-progress-bar
-              mode="indeterminate"
-              class="rounded-pill"
-            ></mat-progress-bar>
+          <div *ngIf="isLoading" class="loading-state py-5">
+            <mat-progress-bar mode="indeterminate" class="cyber-progress"></mat-progress-bar>
+            <div class="text-center mt-3 tiny-label opacity-50">SCANNING LEDGER...</div>
           </div>
 
-          <div
-            *ngIf="!isLoading && plots().length === 0"
-            class="empty-state-box dark:bg-slate-900 dark:border-slate-800"
-          >
-            <div class="empty-icon-wrapper">
-              <mat-icon>add_location_alt</mat-icon>
+          <div *ngIf="!isLoading && plots().length === 0" class="empty-frame">
+            <div class="empty-glow-box">
+              <mat-icon>wifi_off</mat-icon>
             </div>
-            <h4 class="fw-bold h5 text-slate-900 dark:text-white">
-              No assets found
-            </h4>
-            <p class="text-slate-500">
-              You haven't registered any property plots yet.
-            </p>
-            <button
-              mat-stroked-button
-              color="primary"
-              routerLink="/user/register-plot"
-              class="rounded-pill px-4"
-            >
-              Get Started
+            <h4 class="fw-black text-white mb-2">VOID DETECTED</h4>
+            <p class="text-muted mb-4 mx-auto max-w-xs">No tokenized assets found in your current node sector.</p>
+            <button mat-stroked-button class="cyber-btn-outline" routerLink="/user/register-plot">
+              INITIALIZE TOKENIZATION
             </button>
           </div>
 
           <div class="row g-4" *ngIf="!isLoading">
-            <div class="col-md-6" *ngFor="let plot of plots().slice(0, 4)">
-              <mat-card
-                class="asset-card shadow-sm border-0 h-100 overflow-hidden dark:bg-slate-900 dark:border dark:border-slate-800"
+            <div class="col-md-6" *ngFor="let plot of plots().slice(0, 4); let i = index">
+              <div 
+                class="asset-frame animate-slide-in-up"
+                [style.animation-delay]="(i * 0.1) + 0.3 + 's'"
                 [routerLink]="['/user/plot-details', plot.id]"
               >
-                <div class="asset-img-container">
-                  <img
-                    [src]="
-                      plot.propertyImages[0] ||
-                      'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'
-                    "
-                    class="asset-img"
-                  />
-                  <div
-                    class="asset-status-chip dark:bg-slate-800 dark:text-white dark:border-slate-700"
-                    [ngClass]="'status-' + plot.status"
-                  >
-                    {{ plot.status.replace('_', ' ') }}
+                <div class="asset-visual">
+                  <img [src]="plot.propertyImages[0] || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80'" class="asset-img"/>
+                  <div class="asset-overlay"></div>
+                  <div class="asset-status" [class]="plot.status">
+                    {{ plot.status.replace('_', ' ') | uppercase }}
                   </div>
                 </div>
-                <mat-card-content class="p-4">
-                  <h4
-                    class="h6 fw-bold mb-1 text-truncate text-slate-900 dark:text-white"
-                  >
-                    {{ plot.plotName }}
-                  </h4>
-                  <div
-                    class="d-flex align-items-center text-slate-500 small mb-3"
-                  >
+                <div class="asset-content">
+                  <h4 class="h6 fw-black text-white text-truncate mb-1">{{ plot.plotName }}</h4>
+                  <div class="d-flex align-items-center text-muted tiny-label mb-3">
                     <mat-icon class="tiny-icon me-1">location_on</mat-icon>
                     <span class="text-truncate">{{ plot.address }}</span>
                   </div>
-                  <div
-                    class="d-flex justify-content-between align-items-center pt-3 border-top dark:border-slate-800"
-                  >
-                    <span class="fs-5 fw-bold text-indigo"
-                      >₹ {{ plot.marketValue | number: '1.0-0' }}</span
-                    >
-                    <span class="text-slate-400 small">{{
-                      plot.areaSize
-                    }}</span>
+                  <div class="d-flex justify-content-between align-items-center border-top border-white border-opacity-10 pt-3">
+                    <div class="asset-value">
+                      <span class="unit">₹</span>
+                      <span class="val">{{ plot.marketValue | number: '1.0-0' }}</span>
+                    </div>
+                    <div class="asset-metric">{{ plot.areaSize }}</div>
                   </div>
-                </mat-card-content>
-              </mat-card>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Sidebar: Wallet & Activity -->
+        <!-- Sidebar: Network Control -->
         <div class="col-lg-4">
-          <!-- Wallet Card -->
-          <mat-card
-            class="wallet-card-new border-0 mb-5 overflow-hidden dark:bg-slate-900 dark:border dark:border-slate-800"
-          >
-            <div class="wallet-accent"></div>
-            <mat-card-content class="p-4">
-              <div
-                class="d-flex align-items-center justify-content-between mb-4"
-              >
-                <h3 class="h6 fw-bold mb-0 text-slate-900 dark:text-white">
-                  Blockchain Status
-                </h3>
-                <div
-                  class="status-indicator"
-                  [class.active]="web3Service.walletAddress()"
-                ></div>
+          <div class="side-frame mb-5">
+            <div class="side-frame-inner">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="tiny-label uppercase letter-spacing-2 opacity-50">Network Uplink</div>
+                <div class="status-indicator" [class.online]="web3Service.walletAddress()"></div>
               </div>
 
-              <div
-                *ngIf="web3Service.walletAddress(); else notConnected"
-                class="animate-fade-in"
-              >
+              <div *ngIf="web3Service.walletAddress(); else disconnected" class="uplink-active">
                 <div class="d-flex align-items-center gap-3 mb-4">
-                  <div class="wallet-icon-circle">
-                    <mat-icon>account_balance_wallet</mat-icon>
-                  </div>
-                  <div>
-                    <div class="text-slate-500 tiny fw-bold uppercase">
-                      MetaMask Connected
-                    </div>
-                    <div
-                      class="fw-mono small text-truncate text-slate-900 dark:text-slate-300"
-                      style="max-width: 180px;"
-                    >
-                      {{ web3Service.walletAddress() }}
-                    </div>
+                  <div class="node-icon"><mat-icon>account_balance_wallet</mat-icon></div>
+                  <div class="min-w-0">
+                    <div class="tiny-label text-primary uppercase fw-black mb-1">METAMASK NODE</div>
+                    <div class="wallet-addr text-truncate">{{ web3Service.walletAddress() }}</div>
                   </div>
                 </div>
-                <div class="network-pill dark:bg-slate-800 dark:text-slate-300">
-                  <span class="dot"></span> Ethereum Sepolia
+                <div class="network-chip">
+                  <span class="chip-dot"></span>
+                  <span>ETHEREUM SEPOLIA</span>
                 </div>
               </div>
 
-              <ng-template #notConnected>
-                <div class="text-center py-3">
-                  <p class="small text-slate-500 mb-4">
-                    Connect your Web3 wallet to interact with property NFTs.
-                  </p>
-                  <button
-                    mat-flat-button
-                    color="primary"
-                    class="w-100 rounded-pill"
-                    (click)="web3Service.connectWallet()"
-                  >
-                    Connect Wallet
+              <ng-template #disconnected>
+                <div class="text-center py-2">
+                  <p class="tiny-label text-muted mb-4 lh-base">NO WALLET LINK DETECTED. BLOCKCHAIN SYNC DISABLED.</p>
+                  <button mat-flat-button color="primary" class="w-100 cyber-button" (click)="web3Service.connectWallet()">
+                    ESTABLISH UPLINK
                   </button>
                 </div>
               </ng-template>
-            </mat-card-content>
-          </mat-card>
-
-          <!-- Activity Timeline -->
-          <div class="section-header mb-4">
-            <h3 class="h6 fw-bold mb-0 text-slate-900 dark:text-white">
-              Recent Activity
-            </h3>
+            </div>
           </div>
 
-          <mat-card
-            class="timeline-card-new border-0 dark:bg-slate-900 dark:border dark:border-slate-800"
-          >
-            <mat-card-content class="p-0">
-              <div class="timeline-v2">
-                <div
-                  class="timeline-v2-item"
-                  *ngFor="let activity of activities"
-                >
-                  <div
-                    class="timeline-v2-icon dark:bg-slate-800 dark:border-slate-700"
-                    [ngClass]="activity.type"
-                  >
-                    <mat-icon>{{ activity.icon }}</mat-icon>
-                  </div>
-                  <div class="timeline-v2-content">
-                    <div
-                      class="d-flex justify-content-between align-items-start mb-1"
-                    >
-                      <span class="fw-bold small text-primary-600">{{
-                        activity.title
-                      }}</span>
-                      <span class="tiny text-slate-400">{{
-                        activity.time
-                      }}</span>
-                    </div>
-                    <p class="mb-0 tiny text-slate-500 lh-sm">
-                      {{ activity.desc }}
-                    </p>
-                  </div>
-                </div>
+          <div class="frame-header mb-4">
+            <h3 class="h6 fw-black text-white mb-0 uppercase tracking-widest">Data Transmissions</h3>
+          </div>
 
-                <div
-                  *ngIf="activities.length === 0"
-                  class="p-5 text-center text-slate-400"
-                >
-                  <mat-icon class="mb-2">history_toggle_off</mat-icon>
-                  <div class="small">No recent activity</div>
+          <div class="activity-frame">
+            <div class="activity-scroll">
+              <div class="activity-node" *ngFor="let activity of activities">
+                <div class="node-line"></div>
+                <div class="node-dot" [class]="activity.type"></div>
+                <div class="node-content">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span class="node-title">{{ activity.title }}</span>
+                    <span class="node-time">{{ activity.time }}</span>
+                  </div>
+                  <p class="node-desc">{{ activity.desc }}</p>
                 </div>
               </div>
-            </mat-card-content>
-            <mat-card-actions
-              class="p-3 border-top dark:border-slate-800 justify-content-center"
-              *ngIf="activities.length > 0"
-            >
-              <button mat-button class="tiny fw-bold text-slate-500">
-                VIEW FULL HISTORY
-              </button>
-            </mat-card-actions>
-          </mat-card>
+
+              <div *ngIf="activities.length === 0" class="text-center py-5 opacity-20">
+                <mat-icon class="mb-2">sensors_off</mat-icon>
+                <div class="tiny-label uppercase">No Signals</div>
+              </div>
+            </div>
+            <div class="frame-footer p-3 text-center border-top border-white border-opacity-5">
+              <button mat-button class="cyber-link tiny-label">DOWNLOAD LOGS</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   `,
   styles: [
     `
-      .dashboard-wrapper {
-        animation: fadeIn 0.6s ease-out;
+      .dashboard-shell { padding: 2rem 0; }
+
+      /* Cyber Header */
+      .cyber-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        font-size: 0.65rem;
+        font-weight: 900;
+        letter-spacing: 0.15em;
+        border-radius: 4px;
+        border-left: 3px solid #10b981;
+      }
+      
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        background: #10b981;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #10b981;
+        animation: cyber-pulse 2s infinite;
+      }
+      @keyframes cyber-pulse {
+        0% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.5); opacity: 0.5; }
+        100% { transform: scale(1); opacity: 1; }
       }
 
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+      /* Neo Cards */
+      .neo-card {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
-
-      .text-indigo {
-        color: var(--primary-color);
+      .neo-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--accent-color);
+        background: rgba(15, 23, 42, 0.8);
       }
-
-      /* Stat Cards */
-      .stat-card-new {
-        border-radius: 1.25rem !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      .stat-card-new:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;
-      }
-      .stat-icon-box {
+      .neo-card-inner { padding: 1.5rem; position: relative; z-index: 2; }
+      
+      .neo-icon-box {
         width: 48px;
         height: 48px;
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.3);
       }
-      .stat-icon-box mat-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
+      
+      .neo-stat-value {
+        font-size: 2.5rem;
+        font-weight: 900;
+        color: white;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.05em;
+      }
+      .text-glow { text-shadow: 0 0 10px var(--accent-color); }
+      
+      .holographic {
+        position: relative;
+        overflow: hidden;
+      }
+      .holographic::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(255,255,255,0.05) 100%);
+        pointer-events: none;
+      }
+      
+      .holo-scanline {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 10px;
+        background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1), transparent);
+        opacity: 0.3;
+        animation: scanline 4s linear infinite;
+        pointer-events: none;
+      }
+      @keyframes scanline {
+        0% { transform: translateY(-100%); }
+        100% { transform: translateY(1000%); }
+      }
+      .neo-stat-label {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
       }
 
       .trend-badge {
         display: flex;
         align-items: center;
-        gap: 2px;
-        padding: 2px 8px;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-      .trend-up {
-        background: rgba(16, 185, 129, 0.1);
-        color: #10b981;
-      }
-      .trend-neutral {
-        background: rgba(100, 116, 139, 0.1);
-        color: #64748b;
-      }
-      .trend-badge mat-icon {
-        font-size: 14px;
-        width: 14px;
-        height: 14px;
-      }
-
-      /* Asset Cards */
-      .asset-card {
-        border-radius: 1.25rem !important;
-        cursor: pointer;
-      }
-      .asset-img-container {
-        position: relative;
-        height: 180px;
-        overflow: hidden;
-      }
-      .asset-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-      }
-      .asset-card:hover .asset-img {
-        transform: scale(1.05);
-      }
-      .asset-status-chip {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        padding: 4px 12px;
-        border-radius: 9999px;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.6);
         font-size: 0.7rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        backdrop-filter: blur(8px);
-        background: rgba(255, 255, 255, 0.9);
-        color: #0f172a;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        font-weight: 800;
       }
-      .status-pending_approval { color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
-      .status-approved { color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
-      .status-minted { color: #6366f1; border: 1px solid rgba(99, 102, 241, 0.3); }
+      .trend-badge.positive { color: #10b981; background: rgba(16, 185, 129, 0.1); }
 
-      /* Empty State */
-      .empty-state-box {
-        background: var(--bg-card);
-        border: 2px dashed var(--border-color);
-        border-radius: 1.5rem;
-        padding: 4rem 2rem;
-        text-align: center;
+      /* Asset Frames */
+      .asset-frame {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s;
       }
-      .empty-icon-wrapper {
-        width: 80px;
-        height: 80px;
-        background: rgba(99, 102, 241, 0.05);
-        color: var(--primary-color);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1.5rem;
+      .asset-frame:hover {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: var(--primary-color);
+        transform: scale(1.02);
       }
-      .empty-icon-wrapper mat-icon {
-        font-size: 40px;
-        width: 40px;
-        height: 40px;
-      }
-
-      /* Wallet Card */
-      .wallet-card-new {
-        border-radius: 1.25rem !important;
-        position: relative;
-      }
-      .wallet-accent {
+      
+      .asset-visual { height: 180px; position: relative; }
+      .asset-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+      .asset-frame:hover .asset-img { transform: scale(1.1); }
+      .asset-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.8)); }
+      
+      .asset-status {
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #6366f1, #ec4899);
-      }
-      .status-indicator {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #94a3b8;
-      }
-      .status-indicator.active {
-        background: #10b981;
-        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
-      }
-      .wallet-icon-circle {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: var(--primary-color);
+        top: 1rem; right: 1rem;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 0.65rem;
+        font-weight: 900;
+        backdrop-filter: blur(8px);
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
         color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
       }
-      .network-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 12px;
-        background: rgba(0, 0, 0, 0.03);
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-      .network-pill .dot {
-        width: 6px;
-        height: 6px;
-        background: #6366f1;
-        border-radius: 50%;
-      }
+      .asset-status.minted { background: rgba(16, 185, 129, 0.2); border-color: #10b981; }
+      .asset-status.pending_approval { background: rgba(245, 158, 11, 0.2); border-color: #f59e0b; }
 
-      /* Timeline V2 */
-      .timeline-card-new {
-        border-radius: 1.25rem !important;
-      }
-      .timeline-v2 {
+      .asset-content { padding: 1.25rem; }
+      .asset-value .unit { color: var(--primary-color); font-weight: 900; margin-right: 4px; }
+      .asset-value .val { font-size: 1.1rem; font-weight: 900; color: white; }
+      .asset-metric { font-size: 0.7rem; color: rgba(255,255,255,0.4); font-weight: 700; }
+
+      /* Sidebar & Activity */
+      .side-frame {
+        background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
         padding: 1.5rem;
       }
-      .timeline-v2-item {
-        display: flex;
-        gap: 1rem;
-        padding-bottom: 1.5rem;
-        position: relative;
+      
+      .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
       }
-      .timeline-v2-item:not(:last-child)::after {
-        content: '';
-        position: absolute;
-        left: 17px;
-        top: 34px;
-        bottom: 0;
-        width: 1px;
-        background: var(--border-color);
-      }
-      .timeline-v2-icon {
-        width: 34px;
-        height: 34px;
-        border-radius: 10px;
-        background: var(--bg-app);
+      .status-indicator.online { background: #10b981; box-shadow: 0 0 10px #10b981; }
+
+      .node-icon {
+        width: 44px;
+        height: 44px;
+        background: var(--gradient-1);
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
-        z-index: 1;
-        border: 1px solid var(--border-color);
+        color: white;
       }
-      .timeline-v2-icon mat-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
-        color: var(--text-secondary);
+      
+      .wallet-addr { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: rgba(255,255,255,0.5); }
+      
+      .network-chip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        color: rgba(255,255,255,0.7);
       }
-      .timeline-v2-icon.success {
-        background: rgba(16, 185, 129, 0.1);
-        color: #10b981;
-        border-color: rgba(16, 185, 129, 0.2);
+      .chip-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--primary-color); }
+
+      /* Activity Timeline */
+      .activity-frame {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        overflow: hidden;
       }
-      .timeline-v2-icon.success mat-icon {
-        color: #10b981;
+      .activity-scroll { padding: 1.5rem; max-height: 400px; overflow-y: auto; }
+      
+      .activity-node { position: relative; padding-left: 2rem; padding-bottom: 2rem; }
+      .node-line { position: absolute; left: 4px; top: 12px; bottom: 0; width: 1px; background: rgba(255,255,255,0.05); }
+      .activity-node:last-child .node-line { display: none; }
+      
+      .node-dot {
+        position: absolute;
+        left: 0; top: 4px;
+        width: 9px; height: 9px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        z-index: 2;
       }
-      .timeline-v2-icon.warning {
-        background: rgba(245, 158, 11, 0.1);
-        color: #f59e0b;
-        border-color: rgba(245, 158, 11, 0.2);
+      .node-dot.success { background: #10b981; box-shadow: 0 0 8px #10b981; }
+      .node-dot.warning { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+      
+      .node-title { font-size: 0.75rem; font-weight: 900; color: rgba(255,255,255,0.9); }
+      .node-time { font-size: 0.65rem; color: rgba(255,255,255,0.3); font-weight: 700; }
+      .node-desc { font-size: 0.7rem; color: rgba(255,255,255,0.4); margin: 0; line-height: 1.4; }
+
+      /* Utils */
+      .tiny-label { font-size: 0.65rem; font-weight: 800; letter-spacing: 0.05em; }
+      .uppercase { text-transform: uppercase; }
+      .letter-spacing-2 { letter-spacing: 0.2em; }
+      .tracking-widest { letter-spacing: 0.15em; }
+      
+      .cyber-button {
+        padding: 10px 24px !important;
+        border-radius: 12px !important;
+        font-size: 0.85rem !important;
       }
-      .timeline-v2-icon.warning mat-icon {
-        color: #f59e0b;
+      .cyber-btn-outline {
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        color: white !important;
+        border-radius: 12px !important;
+        font-weight: 900 !important;
+        font-size: 0.75rem !important;
+        letter-spacing: 0.05em !important;
       }
+      .cyber-link {
+        color: var(--primary-color) !important;
+        font-weight: 900 !important;
+        font-size: 0.7rem !important;
+        letter-spacing: 0.05em !important;
+      }
+
+      .loading-state { text-align: center; }
+      .cyber-progress { height: 2px; background: rgba(255,255,255,0.05); border-radius: 2px; }
+      
+      .empty-frame {
+        padding: 4rem 2rem;
+        background: rgba(255,255,255,0.01);
+        border: 1px dashed rgba(255,255,255,0.1);
+        border-radius: 30px;
+        text-align: center;
+      }
+      .empty-glow-box {
+        width: 80px; height: 80px;
+        margin: 0 auto 1.5rem;
+        background: rgba(255,255,255,0.02);
+        border-radius: 24px;
+        display: flex; align-items: center; justify-content: center;
+        color: rgba(255,255,255,0.1);
+        mat-icon { font-size: 32px; width: 32px; height: 32px; }
+      }
+
+      .animate-fade-in { animation: fadeIn 0.8s ease-out; }
+      .animate-slide-in-up { animation: slideInUp 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) forwards; opacity: 0; }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     `,
   ],
 })
@@ -587,28 +514,28 @@ export class DashboardComponent implements OnInit {
       next: (activities) => {
         this.activities = activities;
       },
-      error: (err) => console.error('Error loading activities', err),
+      error: (err: any) => console.error('Error loading activities', err),
     });
   }
 
   getStats() {
     return [
       {
-        label: 'Total Properties',
+        label: 'Asset Inventory',
         value: this.plots().length,
         icon: 'location_city',
         color: '#6366f1',
         trend: 12,
       },
       {
-        label: 'Verified NFTs',
+        label: 'Minted Tokens',
         value: this.getMintedCount(),
         icon: 'verified',
         color: '#10b981',
         trend: 8,
       },
       {
-        label: 'Pending Review',
+        label: 'In Review',
         value: this.getPendingCount(),
         icon: 'hourglass_empty',
         color: '#f59e0b',
@@ -626,18 +553,13 @@ export class DashboardComponent implements OnInit {
     return this.plots().filter((p) => p.status === 'pending_approval').length;
   }
 
-  getStatusClass(status: string) {
+  getStatusColor(status: string) {
     switch (status) {
-      case 'minted':
-        return 'bg-success';
-      case 'approved':
-        return 'bg-primary';
-      case 'rejected':
-        return 'bg-danger';
-      case 'pending_approval':
-        return 'bg-warning text-dark';
-      default:
-        return 'bg-secondary';
+      case 'minted': return 'success';
+      case 'approved': return 'primary';
+      case 'rejected': return 'danger';
+      case 'pending_approval': return 'warning';
+      default: return 'secondary';
     }
   }
 }

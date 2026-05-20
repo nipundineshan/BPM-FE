@@ -187,7 +187,7 @@ export class AdminManagementComponent implements OnInit {
       next: (admins) => {
         this.dataSource.data = admins || [];
       },
-      error: (err) => console.error('Error loading admins', err)
+      error: (err: any) => console.error('Error loading admins', err)
     });
   }
 
@@ -200,7 +200,7 @@ export class AdminManagementComponent implements OnInit {
           this.showAddForm = false;
           this.snackBar.open('New Administrator account created successfully!', 'Close', { duration: 3000 });
         },
-        error: (err) => console.error('Error creating admin', err)
+        error: (err: any) => console.error('Error creating admin', err)
       });
     }
   }
@@ -213,7 +213,7 @@ export class AdminManagementComponent implements OnInit {
         const msg = admin.isActive ? 'enabled' : 'disabled';
         this.snackBar.open(`Administrator account ${admin.fullName} ${msg}.`, 'Close', { duration: 2000 });
       },
-      error: (err) => console.error('Error toggling admin status', err)
+      error: (err: any) => console.error('Error toggling admin status', err)
     });
   }
 }

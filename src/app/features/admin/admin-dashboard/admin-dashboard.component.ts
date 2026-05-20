@@ -25,34 +25,38 @@ import { PlotService } from '../../../core/services/plot.service';
     <div class="dashboard-wrapper animate-fade-in">
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-end mb-5">
-        <div>
-          <h1 class="h2 fw-bold tracking-tight mb-1">Administrative Insights</h1>
-          <p class="text-slate-500 mb-0">Monitor platform health, user activity, and verification workflows.</p>
+        <div class="animate-slide-in">
+          <h1 class="h1 fw-black tracking-tighter mb-1 text-gradient">Admin Intelligence</h1>
+          <p class="text-secondary fw-medium opacity-75 mb-0">Platform health, governance workflows, and network metrics.</p>
         </div>
-        <div class="d-flex gap-2">
-          <button mat-stroked-button color="primary" class="rounded-pill">
-            <mat-icon class="me-1">download</mat-icon> Export Report
+        <div class="d-flex gap-3">
+          <button mat-stroked-button color="primary" class="glass-btn-outline">
+            <mat-icon class="me-2">cloud_download</mat-icon> SYSTEM EXPORT
           </button>
-          <button mat-flat-button color="primary" class="rounded-pill shadow-sm" routerLink="/admin/plot-approvals">
-            <mat-icon class="me-1">task_alt</mat-icon> Review Queue
+          <button mat-flat-button color="primary" class="pulse-primary" routerLink="/admin/plot-approvals">
+            <mat-icon class="me-2">verified_user</mat-icon> PROTOCOL QUEUE
           </button>
         </div>
       </div>
       
       <!-- Stats Row -->
       <div class="row g-4 mb-5">
-        <div class="col-md-3" *ngFor="let stat of stats">
-          <mat-card class="stat-card-premium border-0 h-100">
+        <div class="col-md-3" *ngFor="let stat of stats; let i = index">
+          <mat-card class="admin-stat-glass animate-fade-in" [style.animation-delay]="i * 0.1 + 's'">
             <mat-card-content class="p-4">
               <div class="d-flex align-items-center gap-3 mb-3">
-                <div class="stat-icon-wrapper-new" [style.background-color]="stat.color + '15'" [style.color]="stat.color">
-                  <mat-icon>{{stat.icon}}</mat-icon>
+                <div class="stat-icon-wrapper-glass" [style.background]="stat.color">
+                  <mat-icon class="text-white">{{stat.icon}}</mat-icon>
                 </div>
-                <div class="text-muted small fw-bold text-uppercase letter-spacing-1">{{stat.label}}</div>
+                <div class="text-muted tiny fw-black text-uppercase tracking-widest">{{stat.label}}</div>
               </div>
-              <div class="fs-2 fw-bold tracking-tight">{{stat.value}}</div>
-              <div class="mt-2 text-success small d-flex align-items-center gap-1">
-                <mat-icon class="tiny-icon">trending_up</mat-icon> <span>+4% from last week</span>
+              <div class="fs-1 fw-black tracking-tighter text-gradient">{{stat.value}}</div>
+              <div class="mt-3 d-flex align-items-center gap-2">
+                <div class="badge-glass bg-success-glass py-1">
+                  <mat-icon class="tiny-icon">trending_up</mat-icon>
+                  <span class="ms-1">+4%</span>
+                </div>
+                <span class="tiny text-muted fw-bold opacity-50">SYNCED</span>
               </div>
             </mat-card-content>
           </mat-card>
@@ -62,10 +66,10 @@ import { PlotService } from '../../../core/services/plot.service';
       <!-- Charts Row -->
       <div class="row g-4">
         <div class="col-lg-8">
-          <mat-card class="chart-card-premium shadow-sm border-0">
-            <mat-card-header class="p-4 border-bottom">
-              <mat-card-title class="fw-bold fs-6">Verification Activity</mat-card-title>
-              <mat-card-subtitle class="text-slate-400 tiny uppercase fw-bold">Daily processing volume</mat-card-subtitle>
+          <mat-card class="glass-chart-panel animate-slide-in-up">
+            <mat-card-header class="p-4 border-bottom glass-border">
+              <mat-card-title class="fw-black fs-6 tracking-tight">Protocol Activity</mat-card-title>
+              <mat-card-subtitle class="text-primary tiny uppercase fw-black tracking-widest opacity-75">Global Submission Throughput</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content class="p-4">
               <div class="chart-container-large">
@@ -80,10 +84,10 @@ import { PlotService } from '../../../core/services/plot.service';
         </div>
         
         <div class="col-md-4">
-          <mat-card class="chart-card-premium shadow-sm border-0 h-100">
-            <mat-card-header class="p-4 border-bottom">
-              <mat-card-title class="fw-bold fs-6">Asset Distribution</mat-card-title>
-              <mat-card-subtitle class="text-slate-400 tiny uppercase fw-bold">By property category</mat-card-subtitle>
+          <mat-card class="glass-chart-panel animate-slide-in-up h-100" style="animation-delay: 0.2s">
+            <mat-card-header class="p-4 border-bottom glass-border">
+              <mat-card-title class="fw-black fs-6 tracking-tight">Asset Distribution</mat-card-title>
+              <mat-card-subtitle class="text-primary tiny uppercase fw-black tracking-widest opacity-75">Classification by Nodes</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content class="p-4">
               <div class="chart-container-side">
@@ -100,49 +104,49 @@ import { PlotService } from '../../../core/services/plot.service';
 
       <!-- Quick Actions Grid -->
       <div class="mt-5 pt-4">
-        <h4 class="h6 fw-bold mb-4 uppercase text-slate-500 letter-spacing-1">Management Console</h4>
-        <div class="row g-3">
+        <h4 class="h6 fw-black mb-4 uppercase text-primary letter-spacing-2 opacity-75">Governance Console</h4>
+        <div class="row g-4">
           <div class="col-md-3">
-            <button class="action-btn-premium w-100" routerLink="/admin/user-approvals">
-              <div class="action-icon bg-indigo-subtle text-indigo">
+            <button class="glass-action-tile w-100" routerLink="/admin/user-approvals">
+              <div class="action-icon-box bg-primary-glass">
                 <mat-icon>person_add_alt</mat-icon>
               </div>
               <div class="text-start">
-                <div class="fw-bold small">User Registrations</div>
-                <div class="tiny text-slate-500">14 pending approvals</div>
+                <div class="fw-black small tracking-tight">User Validation</div>
+                <div class="tiny text-muted fw-bold">14 ENCRYPTION PENDING</div>
               </div>
             </button>
           </div>
           <div class="col-md-3">
-            <button class="action-btn-premium w-100" routerLink="/admin/plot-approvals">
-              <div class="action-icon bg-amber-subtle text-amber">
-                <mat-icon>gavel</mat-icon>
+            <button class="glass-action-tile w-100" routerLink="/admin/plot-approvals">
+              <div class="action-icon-box bg-warning-glass">
+                <mat-icon>security</mat-icon>
               </div>
               <div class="text-start">
-                <div class="fw-bold small">Asset Verification</div>
-                <div class="tiny text-slate-500">5 plots to review</div>
+                <div class="fw-black small tracking-tight">Asset Audit</div>
+                <div class="tiny text-muted fw-bold">5 REVIEWS PENDING</div>
               </div>
             </button>
           </div>
           <div class="col-md-3">
-            <button class="action-btn-premium w-100" routerLink="/admin/nft-minting">
-              <div class="action-icon bg-pink-subtle text-pink">
-                <mat-icon>auto_awesome</mat-icon>
+            <button class="glass-action-tile w-100" routerLink="/admin/nft-minting">
+              <div class="action-icon-box bg-success-glass">
+                <mat-icon>token</mat-icon>
               </div>
               <div class="text-start">
-                <div class="fw-bold small">NFT Minting</div>
-                <div class="tiny text-slate-500">Blockchain engine</div>
+                <div class="fw-black small tracking-tight">Minting Protocol</div>
+                <div class="tiny text-muted fw-bold">BLOCKCHAIN ENGINE</div>
               </div>
             </button>
           </div>
           <div class="col-md-3">
-            <button class="action-btn-premium w-100" routerLink="/admin/users">
-              <div class="action-icon bg-slate-subtle text-slate">
-                <mat-icon>people_outline</mat-icon>
+            <button class="glass-action-tile w-100" routerLink="/admin/users">
+              <div class="action-icon-box bg-danger-glass">
+                <mat-icon>hub</mat-icon>
               </div>
               <div class="text-start">
-                <div class="fw-bold small">System Directory</div>
-                <div class="tiny text-slate-500">All registered users</div>
+                <div class="fw-black small tracking-tight">Directory Hub</div>
+                <div class="tiny text-muted fw-bold">NODE EXPLORER</div>
               </div>
             </button>
           </div>
@@ -151,55 +155,87 @@ import { PlotService } from '../../../core/services/plot.service';
     </div>
   `,
   styles: [`
-    .animate-fade-in { animation: fadeIn 0.5s ease-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+    .animate-slide-in { animation: slideIn 0.8s ease-out forwards; }
+    .animate-slide-in-up { animation: slideInUp 0.8s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .text-gradient {
+      background: var(--gradient-1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
     /* Stat Cards */
-    .stat-card-premium {
-      border-radius: 1.25rem !important;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    .admin-stat-glass {
+      border-radius: 2rem !important;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .stat-card-premium:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important; }
+    .admin-stat-glass:hover { 
+      transform: translateY(-10px) scale(1.02);
+      border-color: var(--primary-color) !important;
+    }
     
-    .stat-icon-wrapper-new {
-      width: 44px; height: 44px; border-radius: 12px;
+    .stat-icon-wrapper-glass {
+      width: 48px; height: 48px; border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
     }
-    .stat-icon-wrapper-new mat-icon { font-size: 24px; width: 24px; height: 24px; }
+    .stat-icon-wrapper-glass mat-icon { font-size: 24px; width: 24px; height: 24px; }
 
-    /* Chart Cards */
-    .chart-card-premium { border-radius: 1.25rem !important; }
+    /* Chart Panels */
+    .glass-chart-panel { 
+      border-radius: 2rem !important;
+    }
     .chart-container-large { height: 350px; }
     .chart-container-side { height: 300px; padding: 1rem; }
+    .glass-border { border-color: var(--glass-border) !important; }
 
-    /* Action Buttons */
-    .action-btn-premium {
-      display: flex; align-items: center; gap: 1rem;
-      padding: 1.25rem; border-radius: 1rem;
-      background: var(--bg-card); border: 1px solid var(--border-color);
-      transition: all 0.2s;
+    /* Action Tiles */
+    .glass-action-tile {
+      display: flex; align-items: center; gap: 1.25rem;
+      padding: 1.5rem; border-radius: 1.5rem;
+      background: rgba(255,255,255,0.03); 
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      color: var(--text-primary);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      &:hover {
+        background: rgba(255,255,255,0.08);
+        border-color: var(--primary-color);
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+      }
     }
-    .action-btn-premium:hover {
-      background: var(--bg-app); border-color: var(--primary-color);
-      transform: scale(1.02);
-    }
-    .action-icon {
-      width: 48px; height: 48px; border-radius: 12px;
+
+    .action-icon-box {
+      width: 52px; height: 52px; border-radius: 16px;
       display: flex; align-items: center; justify-content: center;
+      
+      mat-icon { font-size: 24px; width: 24px; height: 24px; }
     }
     
-    .bg-indigo-subtle { background: rgba(99, 102, 241, 0.1); }
-    .text-indigo { color: var(--primary-color); }
-    .bg-amber-subtle { background: rgba(245, 158, 11, 0.1); }
-    .text-amber { color: #f59e0b; }
-    .bg-pink-subtle { background: rgba(236, 72, 153, 0.1); }
-    .text-pink { color: #ec4899; }
-    .bg-slate-subtle { background: rgba(100, 116, 139, 0.1); }
-    .text-slate { color: var(--text-secondary); }
-    
+    .glass-btn-outline {
+      border: 1px solid var(--glass-border) !important;
+      background: transparent !important;
+      border-radius: 12px !important;
+      padding: 8px 24px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.1em !important;
+      font-size: 0.75rem !important;
+      
+      &:hover {
+        background: rgba(255,255,255,0.05) !important;
+        border-color: var(--primary-color) !important;
+      }
+    }
+
     .tiny-icon { font-size: 14px; width: 14px; height: 14px; }
-    
-    .mat-card-header { border-bottom: 1px solid var(--border-color) !important; }
+    .letter-spacing-2 { letter-spacing: 0.2em; }
+    .tracking-widest { letter-spacing: 0.15em; }
   `]
 })
 export class AdminDashboardComponent implements OnInit {
@@ -283,7 +319,7 @@ export class AdminDashboardComponent implements OnInit {
           };
         }
       },
-      error: (err) => console.error('Error fetching admin stats', err)
+      error: (err: any) => console.error('Error fetching admin stats', err)
     });
   }
 }

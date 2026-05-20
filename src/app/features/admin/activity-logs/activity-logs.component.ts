@@ -97,7 +97,7 @@ export class ActivityLogsComponent implements OnInit {
       next: (logs) => {
         this.dataSource.data = logs || [];
       },
-      error: (err) => console.error('Error fetching activity logs', err)
+      error: (err: any) => console.error('Error fetching activity logs', err)
     });
   }
 

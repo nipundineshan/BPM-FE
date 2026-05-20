@@ -87,7 +87,7 @@ export class RegisterComponent {
         next: () => {
           this.router.navigate(['/auth/login'], { queryParams: { registered: true } });
         },
-        error: (err) => {
+        error: (err: any) => {
           this.error = 'Registration failed. Email might already be in use.';
           this.loading = false;
         }

@@ -135,7 +135,7 @@ export class RegisterAdminComponent {
         next: () => {
           this.router.navigate(['/admin/dashboard']);
         },
-        error: (err) => {
+        error: (err: any) => {
           alert('Registration failed: ' + (err.error?.message || 'Unknown error'));
           this.isLoading = false;
         }

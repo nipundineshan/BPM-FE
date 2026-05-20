@@ -187,7 +187,7 @@ export class UserManagementComponent implements OnInit {
       next: (users) => {
         this.dataSource.data = users || [];
       },
-      error: (err) => console.error('Error loading users', err)
+      error: (err: any) => console.error('Error loading users', err)
     });
   }
 

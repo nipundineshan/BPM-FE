@@ -473,7 +473,7 @@ export class PlotDetailsComponent implements OnInit {
           duration: 3000,
         });
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isMintLoading = false;
         this.snackBar.open('Minting failed', 'Close', { duration: 3000 });
       },

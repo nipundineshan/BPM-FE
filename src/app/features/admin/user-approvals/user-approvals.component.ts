@@ -26,30 +26,29 @@ import { UserService } from '../../../core/services/user.service';
     ClipboardModule,
   ],
   template: `
-    <div class="approvals-container p-4">
-      <div class="mb-4">
-        <h1 class="display-6 fw-bold text-primary">Pending User Approvals</h1>
-        <p class="text-muted">
-          Review and verify new user registrations before granting system
-          access.
+    <div class="approvals-container animate-fade-in">
+      <div class="mb-5 animate-slide-in">
+        <h1 class="h1 fw-black tracking-tighter mb-1 text-gradient">Identity Verification</h1>
+        <p class="text-secondary fw-medium opacity-75">
+          Review cryptographic identities and registration requests for network access.
         </p>
       </div>
 
-      <mat-card class="border-0 shadow-sm rounded-4 overflow-hidden">
-        <mat-table [dataSource]="dataSource" class="w-100">
+      <mat-card class="glass-table-container animate-slide-in-up">
+        <mat-table [dataSource]="dataSource" class="w-100 bg-transparent">
           <!-- Full Name Column -->
           <ng-container matColumnDef="fullName">
-            <mat-header-cell *matHeaderCellDef class="fw-bold"
-              >Full Name</mat-header-cell
+            <mat-header-cell *matHeaderCellDef class="fw-black text-primary uppercase tracking-widest tiny"
+              >CR-Identity</mat-header-cell
             >
             <mat-cell *matCellDef="let user">
-              <div class="d-flex align-items-center py-2">
-                <div class="avatar-sm me-2 bg-primary-subtle text-primary">
+              <div class="d-flex align-items-center py-3">
+                <div class="avatar-glass me-3 pulse-primary">
                   {{ user.fullName.charAt(0) }}
                 </div>
                 <div>
-                  <div class="fw-bold text-dark">{{ user.fullName }}</div>
-                  <div class="small text-muted">{{ user.email }}</div>
+                  <div class="fw-black text-primary-color tracking-tight">{{ user.fullName }}</div>
+                  <div class="tiny text-muted fw-bold">{{ user.email }}</div>
                 </div>
               </div>
             </mat-cell>
@@ -57,86 +56,86 @@ import { UserService } from '../../../core/services/user.service';
 
           <!-- Gov ID Column -->
           <ng-container matColumnDef="governmentId">
-            <mat-header-cell *matHeaderCellDef class="fw-bold"
-              >Government ID</mat-header-cell
+            <mat-header-cell *matHeaderCellDef class="fw-black text-primary uppercase tracking-widest tiny"
+              >Gov Protocol ID</mat-header-cell
             >
             <mat-cell *matCellDef="let user">
-              <code class="bg-light px-2 py-1 rounded small">{{
-                user.governmentId
-              }}</code>
+              <span class="badge-glass bg-primary-glass">
+                {{ user.governmentId }}
+              </span>
             </mat-cell>
           </ng-container>
 
           <!-- Wallet Column -->
           <ng-container matColumnDef="walletAddress">
-            <mat-header-cell *matHeaderCellDef class="fw-bold"
-              >Wallet Address</mat-header-cell
+            <mat-header-cell *matHeaderCellDef class="fw-black text-primary uppercase tracking-widest tiny"
+              >Blockchain Node</mat-header-cell
             >
             <mat-cell *matCellDef="let user">
-              <span
-                class="text-truncate d-inline-block"
-                style="max-width: 120px;"
-                [matTooltip]="user.walletAddress"
-              >
-                {{ user.walletAddress }}
-              </span>
-              <button
-                mat-icon-button
-                class="ms-1 tiny-btn"
-                [cdkCopyToClipboard]="user.walletAddress"
-              >
-                <mat-icon class="fs-6">content_copy</mat-icon>
-              </button>
+              <div class="d-flex align-items-center bg-white-5 px-3 py-1.5 rounded-pill glass-border">
+                <span
+                  class="text-truncate fw-mono small opacity-75"
+                  style="max-width: 140px;"
+                  [matTooltip]="user.walletAddress"
+                >
+                  {{ user.walletAddress }}
+                </span>
+                <button
+                  mat-icon-button
+                  class="ms-2 tiny-btn-glass"
+                  [cdkCopyToClipboard]="user.walletAddress"
+                >
+                  <mat-icon class="fs-6 opacity-50">content_copy</mat-icon>
+                </button>
+              </div>
             </mat-cell>
           </ng-container>
 
           <!-- Date Column -->
           <ng-container matColumnDef="createdAt">
-            <mat-header-cell *matHeaderCellDef class="fw-bold"
-              >Applied On</mat-header-cell
+            <mat-header-cell *matHeaderCellDef class="fw-black text-primary uppercase tracking-widest tiny"
+              >Signal Date</mat-header-cell
             >
-            <mat-cell *matCellDef="let user">
+            <mat-cell *matCellDef="let user" class="tiny fw-bold text-muted">
               {{ user.createdAt | date: 'mediumDate' }}
             </mat-cell>
           </ng-container>
 
           <!-- Actions Column -->
           <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef class="fw-bold text-center"
-              >Actions</mat-header-cell
+            <mat-header-cell *matHeaderCellDef class="fw-black text-primary uppercase tracking-widest tiny text-center"
+              >Governance</mat-header-cell
             >
             <mat-cell *matCellDef="let user" class="justify-content-center">
               <div class="d-flex gap-2">
                 <button
-                  mat-flat-button
-                  color="primary"
-                  class="rounded-pill px-3"
+                  mat-button
+                  class="badge-glass bg-success-glass px-3 py-1 fw-black h-auto"
                   (click)="approveUser(user)"
                 >
-                  <mat-icon>check</mat-icon> Approve
+                  <mat-icon class="me-1 fs-6">shield_check</mat-icon> VALIDATE
                 </button>
                 <button
-                  mat-stroked-button
-                  color="warn"
-                  class="rounded-pill px-3"
+                  mat-button
+                  class="badge-glass bg-danger-glass px-3 py-1 fw-black h-auto"
                   (click)="rejectUser(user)"
                 >
-                  <mat-icon>close</mat-icon> Reject
+                  <mat-icon class="me-1 fs-6">security_update_warning</mat-icon> REJECT
                 </button>
               </div>
             </mat-cell>
           </ng-container>
 
-          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-          <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          <mat-header-row *matHeaderRowDef="displayedColumns" class="glass-border-bottom"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns" class="animate-row glass-border-bottom"></mat-row>
 
           <!-- Empty State -->
-          <div *matNoDataRow class="text-center p-5">
-            <mat-icon class="display-1 text-muted mb-3">how_to_reg</mat-icon>
-            <h4 class="text-muted">No pending user approvals</h4>
-            <p class="text-muted small">
-              All registrations have been processed.
-            </p>
+          <div *matNoDataRow class="text-center py-5 glass-empty-state-inner">
+            <div class="empty-icon-box-glass mx-auto mb-4">
+              <mat-icon>verified_user</mat-icon>
+            </div>
+            <h4 class="fw-black tracking-tight mb-2">Protocol Queue Clear</h4>
+            <p class="text-muted small fw-medium">All cryptographic identities have been successfully reconciled.</p>
           </div>
         </mat-table>
       </mat-card>
@@ -145,35 +144,86 @@ import { UserService } from '../../../core/services/user.service';
   styles: [
     `
       .approvals-container {
-        background: var(--bg-app);
-        min-height: calc(100vh - 64px);
+        padding: 1rem 0;
       }
-      .avatar-sm {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
+      
+      .text-gradient {
+        background: var(--gradient-1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+      .animate-slide-in { animation: slideIn 0.8s ease-out forwards; }
+      .animate-slide-in-up { animation: slideInUp 0.8s ease-out forwards; }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+      @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+      .glass-table-container {
+        border-radius: 2rem !important;
+        overflow: hidden;
+        border: 1px solid var(--glass-border) !important;
+      }
+
+      .avatar-glass {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
+        font-weight: 800;
+        background: var(--gradient-1);
+        color: white;
+        box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2);
       }
+
       .mat-column-actions {
-        flex: 0 0 250px;
+        flex: 0 0 280px;
       }
-      .tiny-btn {
-        width: 24px;
-        height: 24px;
-        line-height: 24px;
+      
+      .tiny-btn-glass {
+        width: 28px;
+        height: 28px;
+        line-height: 28px;
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid var(--glass-border) !important;
+        border-radius: 8px !important;
       }
+      
       mat-row {
-        transition: background-color 0.2s;
-        border-bottom: 1px solid var(--border-color);
+        background: transparent !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
+      
       mat-row:hover {
-        background-color: var(--bg-app);
-        opacity: 0.8;
+        background: rgba(255, 255, 255, 0.03) !important;
+        transform: scale(1.005);
       }
-      .bg-light { background-color: var(--bg-app) !important; color: var(--text-primary) !important; }
+      
+      .glass-border-bottom {
+        border-bottom: 1px solid var(--glass-border) !important;
+      }
+
+      .bg-white-5 { background: rgba(255,255,255,0.03); }
+      .glass-border { border: 1px solid var(--glass-border); }
+
+      .empty-icon-box-glass {
+        width: 80px;
+        height: 80px;
+        background: rgba(99, 102, 241, 0.05);
+        color: var(--primary-color);
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        mat-icon { font-size: 40px; width: 40px; height: 40px; opacity: 0.5; }
+      }
+
+      .tiny { font-size: 0.65rem; }
+      .tracking-widest { letter-spacing: 0.15em; }
     `,
   ],
 })
@@ -201,7 +251,7 @@ export class UserApprovalsComponent implements OnInit {
       next: (users) => {
         this.dataSource.data = users || [];
       },
-      error: (err) => console.error('Error loading pending users', err),
+      error: (err: any) => console.error('Error loading pending users', err),
     });
   }
 
@@ -222,7 +272,7 @@ export class UserApprovalsComponent implements OnInit {
             },
           );
         },
-        error: (err) => console.error('Error approving user', err),
+        error: (err: any) => console.error('Error approving user', err),
       });
   }
 
@@ -243,7 +293,7 @@ export class UserApprovalsComponent implements OnInit {
             },
           );
         },
-        error: (err) => console.error('Error rejecting user', err),
+        error: (err: any) => console.error('Error rejecting user', err),
       });
   }
 }

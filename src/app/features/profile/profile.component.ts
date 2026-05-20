@@ -201,7 +201,7 @@ export class ProfileComponent implements OnInit {
           this.snackBar.open('Profile updated successfully!', 'Close', { duration: 3000 });
           this.isLoading = false;
         },
-        error: (err) => {
+        error: (err: any) => {
           this.snackBar.open('Update failed: ' + (err.error?.message || 'Error'), 'Close', { duration: 3000 });
           this.isLoading = false;
         }

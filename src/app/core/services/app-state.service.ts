@@ -48,7 +48,7 @@ export class AppStateService {
 
   private loadTheme(): 'light' | 'dark' {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark';
-    const theme = savedTheme || 'light';
+    const theme = savedTheme || 'dark';
     this.updateThemeClass(theme);
     return theme;
   }
